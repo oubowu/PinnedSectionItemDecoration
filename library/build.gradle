@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.novoda.bintray-release'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
+
+    defaultConfig {
+        minSdkVersion 9
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    provided 'com.android.support:recyclerview-v7:24.1.1'
+}
+
+publish {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+    userOrg = properties.getProperty('USER_ORG')//bintray.com用户名
+    groupId = properties.getProperty('GROUP_ID')//jcenter上的路径
+    artifactId = properties.getProperty('ARTIFACT_ID')//项目名称
+    publishVersion = properties.getProperty('PUBLISH_VERSION')//版本号
+    desc = properties.getProperty('DESC')//描述，不重要
+    website = properties.getProperty('WEBSITE')//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginBottom="2dp"
+              android:layout_marginLeft="2dp"
+              android:layout_marginRight="2dp"
+              android:background="#70E593">
+
+    <ImageView
+        android:id="@+id/iv_animal"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        tools:src="@mipmap/panda0"/>
+
+    <TextView
+        tools:text="1"
+        android:id="@+id/tv_pos"
+        android:textColor="#000000"
+        android:textSize="18dp"
+        android:padding="8dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+</FrameLayout>
