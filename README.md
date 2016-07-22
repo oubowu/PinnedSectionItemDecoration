@@ -17,19 +17,20 @@
 compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.3'
 ```
 
-RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型
+RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
 ```
     @Override
     public boolean isPinnedHeaderType(int viewType) {
-        // TYPE_SECTION代表是粘性标签了；类型
+        // TYPE_SECTION代表是粘性标签类型
         return viewType == TYPE_SECTION;
     }
 ```
 
-实现大粘性标签Recyclerview只需要添加一个PinnedHeaderItemDecoration，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签
+实现大粘性标签Recyclerview只需要添加一个PinnedHeaderItemDecoration，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)
 ```
 mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
 ```
+![大标签布局](/pic/big_pinned_header.png) 
 
 实现小粘性标签稍微复杂点，比如这个是数据的布局A
 ```
@@ -59,6 +60,7 @@ mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
 
 </FrameLayout>
 ```
+![布局A](/pic/item-data.png) 
 
 这个是带有小标签的布局B
 ```
@@ -90,8 +92,9 @@ mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
 
 </FrameLayout>
 ```
+![布局B](/pic/small_pinned_header.png) 
 
-布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签Recyclerview只需要添加一个SmallPinnedHeaderItemDecoration，传入的id即为小标签的id，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签
+布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签Recyclerview只需要添加一个SmallPinnedHeaderItemDecoration，传入的id即为小标签的id，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)
 ```
 mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration(R.id.tv_small_pinned_header));
 ```
