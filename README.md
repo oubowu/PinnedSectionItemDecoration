@@ -3,6 +3,7 @@
 ## 功能
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
+- 支持标签点击和长按事件
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -14,20 +15,27 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.3'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.4'
 ```
 
-RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
+RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
 ```
     @Override
     public boolean isPinnedHeaderType(int viewType) {
         // TYPE_SECTION代表是粘性标签类型
         return viewType == TYPE_SECTION;
     }
+    
+    @Override
+    public T getPinnedHeaderInfo(int position) {
+        return mData == null ? null : mData.get(position).getData();
+    }
+    
+    
 ```
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理
 ```
- @Override
+    @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         // 如果是网格布局，这里处理标签的布局占满一行
         final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
@@ -60,9 +68,25 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     }
 ```
 
-实现大粘性标签Recyclerview只需要添加一个PinnedHeaderItemDecoration，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)
-```
-mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
+实现大粘性标签Recyclerview只需要添加一个PinnedHeaderItemDecoration，然后可以传入一个标签的点击监听，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)
+``` 
+    // 监听，注意这个只是会监听顶部标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
+    OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
+        @Override
+        public void onHeaderClick(String data) {
+            Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onHeaderLongClick(String data) {
+            Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }
+    };
+    mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
+    
+    // 或者不监听
+    mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>());
+    
 ```
 ![大标签布局](/pic/big_pinned_header.png) 
 
@@ -128,14 +152,31 @@ mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
 ```
 ![布局B](/pic/small_pinned_header.png) 
 
-布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签Recyclerview只需要添加一个SmallPinnedHeaderItemDecoration，传入的id即为小标签的id，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)
+布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签Recyclerview只需要添加一个SmallPinnedHeaderItemDecoration，然后可以传入一个标签的点击监听，传入的id即为小标签的id，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)
 ```
-mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration(R.id.tv_small_pinned_header));
+    // 监听，注意这个只是会监听顶部小标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
+    OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
+        @Override
+        public void onHeaderClick(String data) {
+            Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onHeaderLongClick(String data) {
+            Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }
+    };
+    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration<String>(R.id.tv_small_pinned_header, headerClickListener));
+    
+    // 或者不监听
+    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration(R.id.tv_small_pinned_header));
 ```
 
 ## 后续
 - 会实现不同布局管理器Item间的间隔的绘制
 - 解决不能设置marginTop的问题
+- 解决设置marginBottom位置不对的问题
+- 加上双击标签事件
 
 #### License
 ```

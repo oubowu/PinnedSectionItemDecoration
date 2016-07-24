@@ -11,13 +11,17 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
+import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +29,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
-    private RecyclerView mRecyclerview;
+    private RecyclerView mRecyclerView;
     private RecyclerAdapter<String, PinnedHeaderEntity<String>> mAdapter;
 
     private int[] mDogs = {R.mipmap.dog0, R.mipmap.dog1, R.mipmap.dog2, R.mipmap.dog3, R.mipmap.dog4, R.mipmap.dog5, R.mipmap.dog6, R.mipmap.dog7, R.mipmap.dog8};
@@ -74,13 +78,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void bindData(RecyclerViewHolder holder, int viewType, int position, String item) {
+            public void bindData(RecyclerViewHolder holder, int viewType, final int position, final String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
                         holder.setText(R.id.tv_animal, item);
+                        holder.setOnClickListener(R.id.tv_animal, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                // 标签点击事件
+                                Toast.makeText(MainActivity.this, "标签是：" + item, Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         break;
                     case RecyclerAdapter.TYPE_DATA:
-                        if (mRecyclerview.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
                             final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
                             lp.height = dip2px(MainActivity.this, mRandom.nextInt(101) + 80);
                         }
@@ -90,12 +101,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
+        mAdapter.setItemClickListener(new OnItemClickListener<String>() {
+            @Override
+            public void onItemClick(View view, String data, int position) {
+                Toast.makeText(MainActivity.this, "图片Id是：" + data, Toast.LENGTH_SHORT).show();
+            }
+        });
         mAdapter.setData(data);
 
-        mRecyclerview = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration());
-        mRecyclerview.setAdapter(mAdapter);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
+            @Override
+            public void onHeaderClick(String data) {
+                Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onHeaderLongClick(String data) {
+                Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+            }
+        };
+        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
+        mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
@@ -110,16 +139,16 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.linnear_layout:
-                mRecyclerview.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.grid_layout:
-                mRecyclerview.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
-                mAdapter.onAttachedToRecyclerView(mRecyclerview);
+                mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
+                mAdapter.onAttachedToRecyclerView(mRecyclerView);
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.staggered_grid_layout:
-                mRecyclerview.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+                mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.to_second:

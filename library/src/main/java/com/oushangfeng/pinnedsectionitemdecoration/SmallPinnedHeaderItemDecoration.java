@@ -10,14 +10,18 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
+
 /**
  * Created by Oubowu on 2016/7/21 15:38.
  * <p>
- * 这个是附在数据View的标签，只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景
+ * 这个是附在数据布局的小标签，只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景
  * <p>
  * 注意：标签不能设置marginTop，因为往上滚动遮不住真正的标签
  */
-public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
+public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     // 标签的id值
     private int mSmallPinnedHeaderId;
@@ -32,16 +36,37 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
     private int mRecyclerViewPaddingTop;
 
     private int mHeaderLeftMargin;
+    private int mHeaderRightMargin;
     private int mHeaderTopMargin;
+    private int mHeaderBottomMargin;
 
+    private OnItemTouchListener mItemTouchListener;
+
+    private int mLeft;
+    private int mTop;
+    private int mRight;
+    private int mBottom;
+
+    private OnHeaderClickListener<T> mHeaderClickListener;
 
     /**
      * 构造方法
      *
-     * @param smallPinnedHeaderId 的标签的Id
+     * @param smallPinnedHeaderId 标签的Id
      */
     public SmallPinnedHeaderItemDecoration(int smallPinnedHeaderId) {
         mSmallPinnedHeaderId = smallPinnedHeaderId;
+    }
+
+    /**
+     * 构造方法
+     *
+     * @param smallPinnedHeaderId 标签的Id
+     * @param headerClickListener 头部点击的监听
+     */
+    public SmallPinnedHeaderItemDecoration(int smallPinnedHeaderId, OnHeaderClickListener<T> headerClickListener) {
+        this(smallPinnedHeaderId);
+        mHeaderClickListener = headerClickListener;
     }
 
     // 取出Adapter
@@ -106,10 +131,13 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
 
             c.save();
 
+
             mClipBounds.left = mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin;
             mClipBounds.right = mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin + mPinnedHeaderView.getWidth();
             mClipBounds.top = mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin;
             mClipBounds.bottom = mPinnedHeaderOffset + mPinnedHeaderView.getHeight() + mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin;
+
+            mItemTouchListener.setBounds(mLeft, mTop, mRight, mClipBounds.bottom);
             ;
 
             // 取AB交集这个就是标签绘制的范围了
@@ -163,10 +191,24 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
 
             measurePinnedHeader();
 
-            // 位置强制在顶部
-            mPinnedHeaderView.layout(mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin, mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin,
-                    mPinnedHeaderView.getMeasuredWidth() + mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin,
-                    mPinnedHeaderView.getMeasuredHeight() + mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin);
+            mLeft = mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin;
+            mTop = mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin;
+            mRight = mPinnedHeaderView.getMeasuredWidth() + mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin + mHeaderRightMargin;
+            mBottom = mPinnedHeaderView.getMeasuredHeight() + mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin + mHeaderBottomMargin;
+
+            // 位置强制布局在顶部
+            mPinnedHeaderView.layout(mLeft, mTop, mRight - mHeaderRightMargin, mBottom - mHeaderBottomMargin);
+
+            if (mItemTouchListener == null) {
+                mItemTouchListener = new OnItemTouchListener(parent.getContext(), mLeft, mTop, mRight, mBottom);
+                parent.addOnItemTouchListener(mItemTouchListener);
+                if (mHeaderClickListener != null) {
+                    mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
+                }
+            }
+            if (mHeaderClickListener != null) {
+                mItemTouchListener.setClickHeaderInfo(((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition));
+            }
 
         }
     }
@@ -236,7 +278,9 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             final ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
             mHeaderLeftMargin = mlp.leftMargin;
+            mHeaderRightMargin = mlp.rightMargin;
             mHeaderTopMargin = mlp.topMargin;
+            mHeaderBottomMargin = mlp.bottomMargin;
         }
 
         // 最大高度为RecyclerView的高度减去padding
@@ -246,6 +290,7 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
         int hs = View.MeasureSpec.makeMeasureSpec(heightSize, heightMode);
         // 强制测量
         mPinnedHeaderView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, hs);
+
     }
 
     // 查找标签的位置
@@ -294,7 +339,7 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
                 // 明确了适配器必须继承PinnedHeaderAdapter接口，因为没有这个就获取不到RecyclerView哪个是标签
                 mAdapter = adapter;
             } else {
-                throw new IllegalStateException("Adapter must implements PinnedHeaderNotifyer");
+                throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
             }
         }
     }

@@ -4,23 +4,29 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
+import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
-import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderNotifyer;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 
 import java.util.List;
 
 /**
  * Created by Oubowu on 2016/7/21 17:40.
+ * <p>
+ * 适配器
  */
-public abstract class RecyclerAdapter<T,V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> implements PinnedHeaderNotifyer {
+public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> implements PinnedHeaderNotifyer<T> {
 
     public final static int TYPE_DATA = 1;
     public final static int TYPE_SECTION = 2;
 
     private List<V> mData;
+
+    private OnItemClickListener<T> mItemClickListener;
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
@@ -55,9 +61,18 @@ public abstract class RecyclerAdapter<T,V extends PinnedHeaderEntity<T>> extends
     }
 
     @Override
-    public RecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        RecyclerViewHolder holder = new RecyclerViewHolder(parent.getContext(),
+    public RecyclerViewHolder onCreateViewHolder(final ViewGroup parent, int viewType) {
+        final RecyclerViewHolder holder = new RecyclerViewHolder(parent.getContext(),
                 LayoutInflater.from(parent.getContext()).inflate(getItemLayoutId(viewType), parent, false));
+        if (mItemClickListener != null) {
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final int position = holder.getLayoutPosition();
+                    mItemClickListener.onItemClick(view, getData().get(position).getData(), position);
+                }
+            });
+        }
         return holder;
     }
 
@@ -79,6 +94,11 @@ public abstract class RecyclerAdapter<T,V extends PinnedHeaderEntity<T>> extends
     @Override
     public boolean isPinnedHeaderType(int viewType) {
         return viewType == TYPE_SECTION;
+    }
+
+    @Override
+    public T getPinnedHeaderInfo(int position) {
+        return mData == null ? null : mData.get(position).getData();
     }
 
     public abstract int getItemLayoutId(int viewType);
@@ -110,4 +130,7 @@ public abstract class RecyclerAdapter<T,V extends PinnedHeaderEntity<T>> extends
         notifyDataSetChanged();
     }
 
+    public void setItemClickListener(OnItemClickListener<T> itemClickListener) {
+        mItemClickListener = itemClickListener;
+    }
 }

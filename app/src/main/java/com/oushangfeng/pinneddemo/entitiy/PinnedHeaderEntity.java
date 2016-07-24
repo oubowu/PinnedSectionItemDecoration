@@ -2,6 +2,8 @@ package com.oushangfeng.pinneddemo.entitiy;
 
 /**
  * Created by Oubowu on 2016/7/21 17:51.
+ * <p>
+ * 大标签实体类，可以将自己想要填充的数据包装进去，同时附带这个数据对应的类型
  */
 public class PinnedHeaderEntity<T> {
 

@@ -2,6 +2,8 @@ package com.oushangfeng.pinneddemo.entitiy;
 
 /**
  * Created by Oubowu on 2016/7/21 17:51.
+ * <p>
+ * 小标签实体类
  */
 public class SmallPinnedHeaderEntity<T> extends PinnedHeaderEntity<T> {
 

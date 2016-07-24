@@ -10,6 +10,10 @@ import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
+
 /**
  * Created by Oubowu on 2016/7/21 15:38.
  * <p>
@@ -17,9 +21,9 @@ import android.view.ViewGroup;
  * <p>
  * porting from https://github.com/takahr/pinned-section-item-decoration
  * <p>
- * 注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签
+ * 注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签;marginBottom还有问题待解决
  */
-public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
+public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     private RecyclerView.Adapter mAdapter;
 
@@ -43,6 +47,28 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
     private int mHeaderTopMargin;
     private int mHeaderRightMargin;
     private int mHeaderBottomMargin;
+
+    // 用于处理头部点击事件屏蔽与响应
+    private OnItemTouchListener mItemTouchListener;
+
+    private int mLeft;
+    private int mTop;
+    private int mRight;
+    private int mBottom;
+
+    private OnHeaderClickListener<T> mHeaderClickListener;
+
+    public PinnedHeaderItemDecoration() {
+    }
+
+    /**
+     * 构造方法
+     *
+     * @param headerClickListener 头部点击的监听
+     */
+    public PinnedHeaderItemDecoration(OnHeaderClickListener<T> headerClickListener) {
+        mHeaderClickListener = headerClickListener;
+    }
 
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
 
@@ -87,6 +113,8 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
         if (mPinnedHeaderView != null) {
             c.save();
 
+            mItemTouchListener.setBounds(mLeft, mTop, mRight, mClipBounds.top);
+
             mClipBounds.top = mRecyclerViewPaddingTop + mHeaderTopMargin;
             // 锁定画布绘制范围，记为B
             // REVERSE_DIFFERENCE，实际上就是求得的B和A的差集范围，即B－A，只有在此范围内的绘制内容才会被显示
@@ -95,6 +123,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             c.clipRect(mClipBounds, Region.Op.UNION);
             c.translate(mRecyclerViewPaddingLeft + mHeaderLeftMargin, mPinnedHeaderOffset + mRecyclerViewPaddingTop + mHeaderTopMargin);
             mPinnedHeaderView.draw(c);
+
 
             c.restore();
         }
@@ -186,10 +215,25 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             final int heightSpec = View.MeasureSpec.makeMeasureSpec(heightSize, heightMode);
             // 强制测量
             mPinnedHeaderView.measure(widthSpec, heightSpec);
+
+            mLeft = mRecyclerViewPaddingLeft + mHeaderLeftMargin;
+            mTop = mRecyclerViewPaddingTop + mHeaderTopMargin;
+            mRight = mPinnedHeaderView.getMeasuredWidth() + mRecyclerViewPaddingLeft + mHeaderLeftMargin + mHeaderRightMargin;
+            mBottom = mPinnedHeaderView.getMeasuredHeight() + mRecyclerViewPaddingTop + mHeaderTopMargin + mHeaderBottomMargin;
+
             // 位置强制布局在顶部
-            mPinnedHeaderView.layout(mRecyclerViewPaddingLeft + mHeaderLeftMargin, mRecyclerViewPaddingTop + mHeaderTopMargin,
-                    mPinnedHeaderView.getMeasuredWidth() + mRecyclerViewPaddingLeft + mHeaderLeftMargin,
-                    mPinnedHeaderView.getMeasuredHeight() + mRecyclerViewPaddingTop + mHeaderTopMargin);
+            mPinnedHeaderView.layout(mLeft, mTop, mRight - mHeaderRightMargin, mBottom - mHeaderBottomMargin);
+
+            if (mItemTouchListener == null) {
+                mItemTouchListener = new OnItemTouchListener<T>(parent.getContext(), mLeft, mTop, mRight, mBottom);
+                parent.addOnItemTouchListener(mItemTouchListener);
+                if (mHeaderClickListener != null) {
+                    mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
+                }
+            }
+            if (mItemTouchListener != null) {
+                mItemTouchListener.setClickHeaderInfo(((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition));
+            }
 
         }
 
@@ -262,7 +306,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             if (adapter instanceof PinnedHeaderNotifyer) {
                 mAdapter = adapter;
             } else {
-                throw new IllegalStateException("Adapter must implements PinnedHeaderNotifyer");
+                throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
             }
         }
     }

@@ -5,11 +5,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
+import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.SmallPinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.SmallPinnedHeaderItemDecoration;
 
 import java.util.ArrayList;
@@ -36,7 +40,7 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        List<SmallPinnedHeaderEntity<String>> data = new ArrayList<>();
+        final List<SmallPinnedHeaderEntity<String>> data = new ArrayList<>();
         int i = 0;
         for (int dog : mDogs) {
             data.add(new SmallPinnedHeaderEntity<>(dog + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "狗狗"));
@@ -71,10 +75,16 @@ public class SecondActivity extends AppCompatActivity {
             }
 
             @Override
-            public void bindData(RecyclerViewHolder holder, int viewType, int position, String item) {
+            public void bindData(RecyclerViewHolder holder, int viewType, final int position, String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
                         holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
+                        holder.setOnClickListener(R.id.tv_small_pinned_header, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                Toast.makeText(SecondActivity.this, "标签是：" + getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                         Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
                         break;
                     case RecyclerAdapter.TYPE_DATA:
@@ -83,12 +93,36 @@ public class SecondActivity extends AppCompatActivity {
                         break;
                 }
             }
+
+            @Override
+            public String getPinnedHeaderInfo(int position) {
+                // 小标签的话数据为PinnedHeaderName，所以这里重写一下
+                return getData().get(position).getPinnedHeaderName();
+            }
         };
+        mAdapter.setItemClickListener(new OnItemClickListener<String>() {
+            @Override
+            public void onItemClick(View view, String data, int position) {
+                Toast.makeText(SecondActivity.this, "图片Id是：" + data, Toast.LENGTH_SHORT).show();
+            }
+        });
         mAdapter.setData(data);
+
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false));
-        mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration(R.id.tv_small_pinned_header));
+        OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
+            @Override
+            public void onHeaderClick(String data) {
+                Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onHeaderLongClick(String data) {
+                Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+            }
+        };
+        mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration<String>(R.id.tv_small_pinned_header, headerClickListener));
         mRecyclerView.setAdapter(mAdapter);
 
     }
