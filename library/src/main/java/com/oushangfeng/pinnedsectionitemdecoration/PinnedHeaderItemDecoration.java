@@ -231,7 +231,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                 }
             }
-            if (mItemTouchListener != null) {
+            if (mHeaderClickListener != null) {
                 mItemTouchListener.setClickHeaderInfo(((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition));
             }
 

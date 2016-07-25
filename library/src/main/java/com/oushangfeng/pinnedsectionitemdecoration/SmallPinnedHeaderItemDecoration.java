@@ -243,10 +243,10 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         // 强制测量
         mPinnedHeaderParentView.measure(ws, hs);
 
-        mRecyclerViewPaddingLeft = /*mPinnedHeaderParentView.getPaddingLeft() +*/ parent.getPaddingLeft();
+        mRecyclerViewPaddingLeft = parent.getPaddingLeft();
         mParentPaddingLeft = mPinnedHeaderParentView.getPaddingLeft();
 
-        mRecyclerViewPaddingTop = /*mPinnedHeaderParentView.getPaddingTop() +*/ parent.getPaddingTop();
+        mRecyclerViewPaddingTop = parent.getPaddingTop();
         mParentPaddingTop = mPinnedHeaderParentView.getPaddingTop();
 
         if (parentLp instanceof RecyclerView.LayoutParams) {
@@ -334,7 +334,8 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         RecyclerView.Adapter adapter = parent.getAdapter();
         if (mAdapter != adapter) {
             // 适配器有差异，清空缓存
-            disableCache();
+            mPinnedHeaderView = null;
+            mHeaderPosition = -1;
             if (adapter instanceof PinnedHeaderNotifyer) {
                 // 明确了适配器必须继承PinnedHeaderAdapter接口，因为没有这个就获取不到RecyclerView哪个是标签
                 mAdapter = adapter;
@@ -342,12 +343,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                 throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
             }
         }
-    }
-
-    // 清空缓存
-    private void disableCache() {
-        mPinnedHeaderView = null;
-        mHeaderPosition = -1;
     }
 
 }

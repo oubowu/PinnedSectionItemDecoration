@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 
 /**
  * Created by Oubowu on 2016/7/24 20:51.
- * <p/>
+ * <p>
  * 用来处理标签的点击事件，现在仅仅支持单击，将来也许会实现长按和双击事件
  */
 public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener {
