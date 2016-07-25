@@ -11,5 +11,6 @@ public interface OnHeaderClickListener<T> {
 
     void onHeaderLongClick(T data);
 
+    void onHeaderDoubleClick(T data);
 
 }

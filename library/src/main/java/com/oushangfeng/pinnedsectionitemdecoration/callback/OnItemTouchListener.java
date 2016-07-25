@@ -73,6 +73,9 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
         @Override
         public boolean onDown(MotionEvent e) {
+            
+            // Log.e("TAG","GestureListener-78行-onDown(): ");
+            
             if (!mDoubleTap) {
                 mIntercept = false;
             } else {
@@ -99,12 +102,19 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
             // Log.e("TAG", "GestureListener-81行-onSingleTapUp(): ");
             shouldIntercept(e);
 
+            return mIntercept;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            // Log.e("TAG","GestureListener-113行-onSingleTapConfirmed(): ");
+
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
                 mHeaderClickListener.onHeaderClick(mClickHeaderInfo);
             }
 
-            return mIntercept;
+            return super.onSingleTapConfirmed(e);
         }
 
         @Override
@@ -115,8 +125,14 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
             mDoubleTap = true;
             shouldIntercept(e);
 
+            if (mIntercept && mHeaderClickListener != null) {
+                // 自己处理点击标签事件
+                mHeaderClickListener.onHeaderDoubleClick(mClickHeaderInfo);
+            }
+
             return mIntercept;
         }
+        
     }
 
     private void shouldIntercept(MotionEvent e) {

@@ -13,4 +13,9 @@ public class OnHeaderClickAdapter<T> implements OnHeaderClickListener<T> {
     public void onHeaderLongClick(T data) {
 
     }
+
+    @Override
+    public void onHeaderDoubleClick(T data) {
+
+    }
 }

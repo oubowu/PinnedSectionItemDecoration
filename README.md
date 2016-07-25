@@ -3,7 +3,7 @@
 ## 功能
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
-- 支持标签点击和长按事件
+- 支持标签单击、双击和长按事件
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -15,7 +15,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.5'(还没过审，暂时不能compile，需要看效果clone项目吧-_-)
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.6'(还没过审，暂时不能compile，需要看效果clone项目吧-_-)
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
@@ -81,6 +81,12 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
         public void onHeaderLongClick(String data) {
             Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
+        
+        @Override
+        public void onHeaderDoubleClick(String data) {
+            Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }        
+        
     };
     mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
     
@@ -158,13 +164,19 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
         @Override
         public void onHeaderClick(String data) {
-            Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onHeaderLongClick(String data) {
-            Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+            Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
+        
+        @Override
+        public void onHeaderDoubleClick(String data) {
+            Toast.makeText(SecondActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
+        }               
+        
     };
     mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration<String>(R.id.tv_small_pinned_header, headerClickListener));
     
@@ -176,7 +188,6 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 - 会实现不同布局管理器Item间的间隔的绘制
 - 解决不能设置marginTop的问题
 - 解决设置marginBottom位置不对的问题
-- 加上双击标签事件
 
 #### License
 ```

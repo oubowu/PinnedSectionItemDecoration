@@ -122,6 +122,11 @@ public class MainActivity extends AppCompatActivity {
             public void onHeaderLongClick(String data) {
                 Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
+
+            @Override
+            public void onHeaderDoubleClick(String data) {
+                Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            }
         };
         mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
         mRecyclerView.setAdapter(mAdapter);
