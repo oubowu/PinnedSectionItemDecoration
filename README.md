@@ -15,7 +15,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.5'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.5'(还没过审，暂时不能compile，需要看效果clone项目吧-_-)
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
