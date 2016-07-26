@@ -4,6 +4,7 @@
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签单击、双击和长按事件
+- 可以设置各种布局的分割线(目前正在进行中...-_-)
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -15,7 +16,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.6'(还没过审，暂时不能compile，需要看效果clone项目吧-_-)
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.6'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
