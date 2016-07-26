@@ -7,10 +7,12 @@
 - 可以设置各种布局的分隔线(还差一个瀑布流的分隔线正在进行中......-_-)
 
 ## 效果图
+- 不带分隔线
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
 ![大标签网格布局](/pic/big_header_gridlayout.gif) 
 ![大标签瀑布流布局](/pic/big_header_staggeredgridlayout.gif) 
 ![小标签线性布局](/pic/small_header_linearlayout.gif) 
+- 带分隔线
 ![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
 ![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
 ![小标签线性布局带分隔线](/pic/small_header_linear_divider.png) 
