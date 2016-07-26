@@ -37,7 +37,6 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
     }
 
     public void setBounds(int left, int top, int right, int bottom) {
-
         mLeft = left;
         mTop = top;
         mRight = right;
@@ -47,6 +46,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
     @Override
     public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent event) {
         // 这里处理触摸事件来决定是否自己处理事件
+        mGestureDetector.setIsLongpressEnabled(true);
         mGestureDetector.onTouchEvent(event);
         return mIntercept;
     }
@@ -73,9 +73,9 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
         @Override
         public boolean onDown(MotionEvent e) {
-            
-            // Log.e("TAG","GestureListener-78行-onDown(): ");
-            
+
+            // Log.e("TAG", "GestureListener-78行-onDown(): ");
+
             if (!mDoubleTap) {
                 mIntercept = false;
             } else {
@@ -107,7 +107,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
         @Override
         public boolean onSingleTapConfirmed(MotionEvent e) {
-            // Log.e("TAG","GestureListener-113行-onSingleTapConfirmed(): ");
+            // Log.e("TAG", "GestureListener-113行-onSingleTapConfirmed(): ");
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
@@ -130,9 +130,12 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
                 mHeaderClickListener.onHeaderDoubleClick(mClickHeaderInfo);
             }
 
+            // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理
+            mGestureDetector.setIsLongpressEnabled(false);
+
             return mIntercept;
         }
-        
+
     }
 
     private void shouldIntercept(MotionEvent e) {

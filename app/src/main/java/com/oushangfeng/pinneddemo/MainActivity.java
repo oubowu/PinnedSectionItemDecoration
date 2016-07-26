@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             public void bindData(RecyclerViewHolder holder, int viewType, final int position, final String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
+                        holder.itemView.setTag(position);
                         holder.setText(R.id.tv_animal, item);
                         holder.setOnClickListener(R.id.tv_animal, new View.OnClickListener() {
                             @Override
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                         break;
                     case RecyclerAdapter.TYPE_DATA:
+                        holder.itemView.setTag(position);
                         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
                             final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
                             lp.height = dip2px(MainActivity.this, mRandom.nextInt(101) + 80);
@@ -128,7 +130,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
         };
-        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
+        mRecyclerView.addItemDecoration(
+                new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener)
+                        .create());
         mRecyclerView.setAdapter(mAdapter);
     }
 

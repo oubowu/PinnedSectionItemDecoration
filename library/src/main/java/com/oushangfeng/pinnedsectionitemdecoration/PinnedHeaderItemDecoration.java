@@ -3,16 +3,20 @@ package com.oushangfeng.pinnedsectionitemdecoration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
+import com.oushangfeng.pinnedsectionitemdecoration.util.DividerHelper;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
@@ -25,10 +29,17 @@ import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer
  */
 public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
+    private OnHeaderClickListener<T> mHeaderClickListener;
+
+    private boolean mEnableDivider;
+
+    private int mDividerId;
+    private Drawable mDrawable;
     private RecyclerView.Adapter mAdapter;
 
     // 缓存的标签
     private View mPinnedHeaderView;
+
     // 缓存的标签位置
     int mPinnedHeaderPosition = -1;
 
@@ -56,31 +67,94 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mRight;
     private int mBottom;
 
-    private OnHeaderClickListener<T> mHeaderClickListener;
+    private SparseIntArray mHeaderFakePosition = new SparseIntArray();
 
-    public PinnedHeaderItemDecoration() {
+    private int mHeaderCount = 1;
+
+    // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
+    // 1.onDraw方法先于drawChildren
+    // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
+    // 3.getItemOffsets 可以通过outRect.set()为每个Item设置一定的偏移量，主要用于绘制Decorator。
+
+    private PinnedHeaderItemDecoration(Builder<T> builder) {
+        mEnableDivider = builder.enableDivider;
+        mHeaderClickListener = builder.headerClickListener;
+        mDividerId = builder.dividerId;
     }
 
-    /**
-     * 构造方法
-     *
-     * @param headerClickListener 头部点击的监听
-     */
     public PinnedHeaderItemDecoration(OnHeaderClickListener<T> headerClickListener) {
         mHeaderClickListener = headerClickListener;
     }
 
-    // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
+    public PinnedHeaderItemDecoration(boolean enableDivider, OnHeaderClickListener<T> headerClickListener) {
+        mEnableDivider = enableDivider;
+        mHeaderClickListener = headerClickListener;
+    }
 
-    // 1.onDraw方法先于drawChildren
+    public PinnedHeaderItemDecoration(int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener) {
+        mDividerId = dividerId;
+        mEnableDivider = enableDivider;
+        mHeaderClickListener = headerClickListener;
+    }
 
-    // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
 
-    // 3.getItemOffsets 可以通过outRect.set()为每个Item设置一定的偏移量，主要用于绘制Decorator。
+        // Log.e("TAG", "PinnedHeaderItemDecoration-92行-getItemOffsets(): ");
+
+        checkCache(parent);
+
+        if (!mEnableDivider) {
+            return;
+        }
+
+        if (mDrawable == null) {
+            mDrawable = ContextCompat.getDrawable(parent.getContext(), mDividerId != 0 ? mDividerId : R.drawable.divider);
+        }
+
+        if (parent.getLayoutManager() instanceof GridLayoutManager) {
+            if (!isPinnedHeader(parent, view)) {
+                final int spanCount = getSpanCount(parent);
+                int position = parent.getChildAdapterPosition(view);
+
+                if (mHeaderFakePosition.get(position) == 0) {
+                    mHeaderFakePosition.put(position, mHeaderCount - 1);
+                }
+                final int headerCount = mHeaderFakePosition.get(position);
+
+                position = position - headerCount;
+                if (isFirstColumn(parent, position, spanCount)) {
+                    // 第一列要多画左边
+                    outRect.set(mDrawable.getIntrinsicWidth(), 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+                } else {
+                    outRect.set(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+                }
+            } else {
+                int position = parent.getChildAdapterPosition(view);
+                if (mHeaderFakePosition.get(position) == 0) {
+                    // 记录头部出现的位置
+                    mHeaderFakePosition.put(position, mHeaderCount);
+                    mHeaderCount++;
+                }
+                // 标签画底部分割线
+                outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
+            }
+        } else if (parent.getLayoutManager() instanceof LinearLayoutManager) {
+            if (!isPinnedHeader(parent, view)) {
+                outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
+            }
+        } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            // TODO: 2016/7/26 瀑布流间隔
+        }
+    }
 
 
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+        if (mEnableDivider) {
+            drawDivider(c, parent);
+        }
 
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
@@ -104,6 +178,50 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             }
             // 锁定画布绘制范围，记为A
             c.clipRect(mClipBounds);
+        }
+
+    }
+
+    // 画分割线
+    private void drawDivider(Canvas c, RecyclerView parent) {
+
+        // 不让分割线画出界限
+        c.clipRect(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getWidth() - parent.getPaddingRight(), parent.getHeight() - parent.getPaddingBottom());
+
+        if (parent.getLayoutManager() instanceof GridLayoutManager) {
+            int childCount = parent.getChildCount();
+            final int spanCount = getSpanCount(parent);
+            for (int i = 0; i < childCount; i++) {
+                final View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                // 要考虑View的重用啊
+                int realPosition = parent.getChildAdapterPosition(child);
+                if (isPinnedHeaderType(mAdapter.getItemViewType(realPosition))) {
+                    DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
+                } else {
+                    final int headerCount = mHeaderFakePosition.get(realPosition);
+                    int fakePosition = realPosition - headerCount;
+                    // Log.e("TAG", "PinnedHeaderItemDecoration-200行-drawDivider(): " + child.getTop() + ";" + mPinnedHeaderView.getTop());
+                    if (isFirstColumn(parent, fakePosition, spanCount)) {
+                        DividerHelper.drawLeft(c, mDrawable, child, params);
+                    }
+                    DividerHelper.drawBottom(c, mDrawable, child, params);
+                    DividerHelper.drawRight(c, mDrawable, child, params);
+                }
+            }
+        } else if (parent.getLayoutManager() instanceof LinearLayoutManager) {
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                final View child = parent.getChildAt(i);
+                int realPosition = parent.getChildAdapterPosition(child);
+                if (!isPinnedHeaderType(mAdapter.getItemViewType(realPosition))) {
+                    final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                    DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
+                }
+            }
+        } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            // TODO: 2016/7/26 位置错乱有很大问题
+
         }
 
     }
@@ -152,8 +270,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      */
     @SuppressWarnings("unchecked")
     private void createPinnedHeader(RecyclerView parent) {
-        // 检查缓存
-        checkCache(parent);
 
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
@@ -310,5 +426,62 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             }
         }
     }
+
+    private boolean isFirstColumn(RecyclerView parent, int pos, int spanCount) {
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            if (pos % spanCount == 0) {
+                return true;
+            }
+        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+            // TODO: 2016/7/26 瀑布流复杂
+        }
+        return false;
+    }
+
+    private int getSpanCount(RecyclerView parent) {
+        // 列数
+        int spanCount = -1;
+        RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            spanCount = ((GridLayoutManager) layoutManager).getSpanCount();
+        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
+            spanCount = ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
+        }
+        return spanCount;
+    }
+
+    public static class Builder<T> {
+
+        private OnHeaderClickListener<T> headerClickListener;
+
+        private int dividerId;
+
+        private boolean enableDivider;
+
+        public Builder() {
+        }
+
+        public Builder<T> setHeaderClickListener(OnHeaderClickListener<T> headerClickListener) {
+            this.headerClickListener = headerClickListener;
+            return this;
+        }
+
+        public Builder<T> setDividerId(int dividerId) {
+            this.dividerId = dividerId;
+            return this;
+        }
+
+        public Builder<T> enableDivider(boolean enableDivider) {
+            this.enableDivider = enableDivider;
+            return this;
+        }
+
+        public PinnedHeaderItemDecoration<T> create() {
+            return new PinnedHeaderItemDecoration<T>(this);
+        }
+
+    }
+
 
 }

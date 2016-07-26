@@ -3,6 +3,8 @@ package com.oushangfeng.pinnedsectionitemdecoration;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
+import com.oushangfeng.pinnedsectionitemdecoration.util.DividerHelper;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
@@ -24,10 +27,17 @@ import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer
 public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     // 标签的id值
-    private int mSmallPinnedHeaderId;
+    private int mPinnedHeaderId;
+
+    private OnHeaderClickListener<T> mHeaderClickListener;
+
+    private int mDividerId;
+    private boolean mEnableDivider;
+    private Drawable mDrawable;
 
     // 标签父布局的左间距
     private int mParentPaddingLeft;
+
     // RecyclerView的左间距
     private int mRecyclerViewPaddingLeft;
     // 标签父布局的顶间距
@@ -47,45 +57,74 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     private int mRight;
     private int mBottom;
 
-    private OnHeaderClickListener<T> mHeaderClickListener;
-
-    /**
-     * 构造方法
-     *
-     * @param smallPinnedHeaderId 标签的Id
-     */
-    public SmallPinnedHeaderItemDecoration(int smallPinnedHeaderId) {
-        mSmallPinnedHeaderId = smallPinnedHeaderId;
-    }
-
-    /**
-     * 构造方法
-     *
-     * @param smallPinnedHeaderId 标签的Id
-     * @param headerClickListener 头部点击的监听
-     */
-    public SmallPinnedHeaderItemDecoration(int smallPinnedHeaderId, OnHeaderClickListener<T> headerClickListener) {
-        this(smallPinnedHeaderId);
-        mHeaderClickListener = headerClickListener;
-    }
-
     // 取出Adapter
     RecyclerView.Adapter mAdapter = null;
 
     private View mPinnedHeaderParentView;
+
     // 缓存某个标签
     private View mPinnedHeaderView = null;
+
     // 缓存某个标签的位置
     private int mHeaderPosition = -1;
 
     // 顶部标签的Y轴偏移值
     private int mPinnedHeaderOffset;
-
     // 用于锁定画布绘制范围
     private Rect mClipBounds;
 
+    private SmallPinnedHeaderItemDecoration(Builder<T> builder) {
+        mEnableDivider = builder.enableDivider;
+        mHeaderClickListener = builder.headerClickListener;
+        mDividerId = builder.dividerId;
+        mPinnedHeaderId = builder.pinnedHeaderId;
+    }
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId) {
+        mPinnedHeaderId = pinnedHeaderId;
+    }
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, OnHeaderClickListener<T> headerClickListener) {
+        mPinnedHeaderId = pinnedHeaderId;
+        mHeaderClickListener = headerClickListener;
+    }
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener) {
+        mPinnedHeaderId = pinnedHeaderId;
+        mEnableDivider = enableDivider;
+        mHeaderClickListener = headerClickListener;
+    }
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener) {
+        mPinnedHeaderId = pinnedHeaderId;
+        mDividerId = dividerId;
+        mEnableDivider = enableDivider;
+        mHeaderClickListener = headerClickListener;
+    }
+
+    @Override
+    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+
+        checkCache(parent);
+
+        if (!mEnableDivider) {
+            return;
+        }
+
+        if (mDrawable == null) {
+            mDrawable = ContextCompat.getDrawable(parent.getContext(), mDividerId != 0 ? mDividerId : R.drawable.divider);
+        }
+
+        outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
+
+    }
+
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
+        if (mEnableDivider) {
+            drawDivider(c, parent);
+        }
 
         // 只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景
         if (parent.getLayoutManager() instanceof GridLayoutManager && ((GridLayoutManager) parent.getLayoutManager()).getSpanCount() > 1) {
@@ -102,7 +141,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             final int headerEndAt = mPinnedHeaderParentView.getTop() + mPinnedHeaderParentView.getMeasuredHeight() + mRecyclerViewPaddingTop;
             // 根据xy坐标查找view
             View v = parent.findChildViewUnder(c.getWidth() / 2, headerEndAt + 0.00001f);
-            if (isHeaderView(parent, v) && v.getTop() <= mPinnedHeaderView.getHeight() + mRecyclerViewPaddingTop + mParentPaddingTop) {
+            if (isPinnedHeader(parent, v) && v.getTop() <= mPinnedHeaderView.getHeight() + mRecyclerViewPaddingTop + mParentPaddingTop) {
                 // 如果view是标签的话，那么缓存的标签就要跟随这个真正的标签标签移动了，效果类似于下面的标签把它顶上去一样
                 // 得到mPinnedHeaderView为标签跟随移动的位移
                 mPinnedHeaderOffset = v.getTop() - (mRecyclerViewPaddingTop + mParentPaddingTop + mPinnedHeaderView.getHeight());
@@ -124,13 +163,25 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         }
     }
 
+    private void drawDivider(Canvas c, RecyclerView parent) {
+
+        // 不让分割线画出界限
+        c.clipRect(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getWidth() - parent.getPaddingRight(), parent.getHeight() - parent.getPaddingBottom());
+
+        int childCount = parent.getChildCount();
+        for (int i = 0; i < childCount; i++) {
+            final View child = parent.getChildAt(i);
+            final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+            DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
+        }
+    }
+
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
         if (mPinnedHeaderView != null) {
 
             c.save();
-
 
             mClipBounds.left = mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin;
             mClipBounds.right = mRecyclerViewPaddingLeft + mParentPaddingLeft + mHeaderLeftMargin + mPinnedHeaderView.getWidth();
@@ -153,9 +204,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     // 创建标签
     @SuppressWarnings("unchecked")
     private void createPinnedHeader(RecyclerView parent) {
-
-        // 检查缓存
-        checkCache(parent);
 
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
@@ -259,7 +307,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     private void measurePinnedHeader() {
 
         // 2.测量标签
-        mPinnedHeaderView = mPinnedHeaderParentView.findViewById(mSmallPinnedHeaderId);
+        mPinnedHeaderView = mPinnedHeaderParentView.findViewById(mPinnedHeaderId);
         // 获取标签的布局属性
         ViewGroup.LayoutParams lp = mPinnedHeaderView.getLayoutParams();
         if (lp == null) {
@@ -310,7 +358,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     }
 
     // 检查传入View是否是标签
-    private boolean isHeaderView(RecyclerView parent, View v) {
+    private boolean isPinnedHeader(RecyclerView parent, View v) {
         // 获取View在parent中的位置
         final int position = parent.getChildAdapterPosition(v);
         if (position == RecyclerView.NO_POSITION) {
@@ -342,6 +390,44 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             } else {
                 throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
             }
+        }
+    }
+
+    public static class Builder<T> {
+
+        private OnHeaderClickListener<T> headerClickListener;
+
+        private int dividerId;
+
+        private int pinnedHeaderId;
+
+        private boolean enableDivider;
+
+        public Builder() {
+        }
+
+        public Builder<T> setHeaderClickListener(OnHeaderClickListener<T> headerClickListener) {
+            this.headerClickListener = headerClickListener;
+            return this;
+        }
+
+        public Builder<T> setDividerId(int dividerId) {
+            this.dividerId = dividerId;
+            return this;
+        }
+
+        public Builder<T> enableDivider(boolean enableDivider) {
+            this.enableDivider = enableDivider;
+            return this;
+        }
+
+        public Builder<T> setPinnedHeaderId(int pinnedHeaderId) {
+            this.pinnedHeaderId = pinnedHeaderId;
+            return this;
+        }
+
+        public SmallPinnedHeaderItemDecoration<T> create() {
+            return new SmallPinnedHeaderItemDecoration<T>(this);
         }
     }
 

@@ -4,19 +4,22 @@
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签单击、双击和长按事件
-- 可以设置各种布局的分割线(目前正在进行中...-_-)
+- 可以设置各种布局的分隔线(还差一个瀑布流的分隔线正在进行中......-_-)
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
 ![大标签网格布局](/pic/big_header_gridlayout.gif) 
 ![大标签瀑布流布局](/pic/big_header_staggeredgridlayout.gif) 
 ![小标签线性布局](/pic/small_header_linearlayout.gif) 
+![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
+![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
+![小标签线性布局带分隔线](/pic/small_header_linear_divider.png) 
 
 ## 它能做什么？
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.6'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.7'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
@@ -91,8 +94,19 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     };
     mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
     
-    // 或者不监听
-    mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>());
+    // 现在有三种带参构造方法，支持设置分隔线的样式
+   
+    public PinnedHeaderItemDecoration(OnHeaderClickListener<T> headerClickListener) 
+   
+    // enableDivider为true的话，使用默认的样式
+    public PinnedHeaderItemDecoration(boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
+   
+    // enableDivider为true以及id有效，使用自定义的样式
+    public PinnedHeaderItemDecoration(int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
+    
+    
+    // 现在也可以用创建者模式，更加灵活，注意必须enableDivider设置id才有效
+    mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener).create());
     
 ```
 ![大标签布局](/pic/big_pinned_header.png) 
@@ -181,12 +195,24 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     };
     mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration<String>(R.id.tv_small_pinned_header, headerClickListener));
     
-    // 或者不监听
-    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration(R.id.tv_small_pinned_header));
+    
+    // 现在有四种带参构造方法，支持设置分隔线的样式，与上面的同理
+    
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId);
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, OnHeaderClickListener<T> headerClickListener);
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
+
+    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
+    
+    // 现在也可以用创建者模式
+    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder<String>().enableDivider(true).setDividerId(R.drawable.divider).setHeaderClickListener(headerClickListener).setPinnedHeaderId(R.id.tv_small_pinned_header).create());
+    
 ```
 
 ## 后续
-- 会实现不同布局管理器Item间的间隔的绘制
+- 会实现不同布局管理器Item间的间隔的绘制(还差瀑布流布局)
 - 解决不能设置marginTop的问题
 - 解决设置marginBottom位置不对的问题
 

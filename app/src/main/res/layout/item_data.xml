@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginBottom="2dp"
-              android:layout_marginLeft="2dp"
-              android:layout_marginRight="2dp"
-              android:background="#70E593">
-
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="#70E593">
+    <!--    android:layout_marginBottom="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginRight="2dp"-->
     <ImageView
         android:id="@+id/iv_animal"
         android:layout_width="match_parent"
@@ -15,12 +14,12 @@
         tools:src="@mipmap/panda0"/>
 
     <TextView
-        tools:text="1"
         android:id="@+id/tv_pos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
         android:textColor="#000000"
         android:textSize="18dp"
-        android:padding="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        tools:text="1"/>
 
 </FrameLayout>
