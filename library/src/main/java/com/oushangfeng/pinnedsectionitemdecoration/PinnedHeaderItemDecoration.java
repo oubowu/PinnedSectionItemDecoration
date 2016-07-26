@@ -165,7 +165,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
             final int headEnd = mPinnedHeaderView.getTop() + mPinnedHeaderView.getHeight();
             // 根据坐标查找view，headEnd + 1找到的就是mPinnedHeaderView底部下面的view
-            final View belowView = parent.findChildViewUnder(c.getWidth() / 2, headEnd + 0.00001f);
+            final View belowView = parent.findChildViewUnder(c.getWidth() / 2, headEnd + 1);
             if (isPinnedHeader(parent, belowView)) {
                 // 如果是标签的话，缓存的标签就要同步跟此标签移动
                 // 根据belowView相对顶部距离计算出缓存标签的位移

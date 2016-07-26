@@ -140,7 +140,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             // 标签相对parent高度加上自身的高度
             final int headerEndAt = mPinnedHeaderParentView.getTop() + mPinnedHeaderParentView.getMeasuredHeight() + mRecyclerViewPaddingTop;
             // 根据xy坐标查找view
-            View v = parent.findChildViewUnder(c.getWidth() / 2, headerEndAt + 0.00001f);
+            View v = parent.findChildViewUnder(c.getWidth() / 2, headerEndAt + 1);
             if (isPinnedHeader(parent, v) && v.getTop() <= mPinnedHeaderView.getHeight() + mRecyclerViewPaddingTop + mParentPaddingTop) {
                 // 如果view是标签的话，那么缓存的标签就要跟随这个真正的标签标签移动了，效果类似于下面的标签把它顶上去一样
                 // 得到mPinnedHeaderView为标签跟随移动的位移
@@ -148,6 +148,8 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             } else {
                 mPinnedHeaderOffset = 0;
             }
+
+//            Log.e("TAG", "SmallPinnedHeaderItemDecoration-152行-onDraw(): " + v.getTop() + ";" + mPinnedHeaderOffset);
 
             // 拿到锁定的矩形
             mClipBounds = c.getClipBounds();
@@ -189,7 +191,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             mClipBounds.bottom = mPinnedHeaderOffset + mPinnedHeaderView.getHeight() + mRecyclerViewPaddingTop + mParentPaddingTop + mHeaderTopMargin;
 
             mItemTouchListener.setBounds(mLeft, mTop, mRight, mClipBounds.bottom);
-            ;
 
             // 取AB交集这个就是标签绘制的范围了
             c.clipRect(mClipBounds, Region.Op.INTERSECT);
