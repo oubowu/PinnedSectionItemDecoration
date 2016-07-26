@@ -71,6 +71,16 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     private int mHeaderCount = 1;
 
+    /**
+     * 如果是网格布局使用了分隔线，Adapter刷新数据的时候，需要调用此方法
+     */
+    public void resetDivider(RecyclerView rv) {
+        if (mEnableDivider && rv.getLayoutManager() instanceof GridLayoutManager) {
+            mHeaderFakePosition.clear();
+            mHeaderCount = 1;
+        }
+    }
+
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
@@ -98,7 +108,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+    public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, RecyclerView.State state) {
 
         // Log.e("TAG", "PinnedHeaderItemDecoration-92行-getItemOffsets(): ");
 
@@ -136,7 +146,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                     mHeaderFakePosition.put(position, mHeaderCount);
                     mHeaderCount++;
                 }
-                // 标签画底部分割线
+                // 标签画底部分隔线
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
             }
         } else if (parent.getLayoutManager() instanceof LinearLayoutManager) {
@@ -145,6 +155,11 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
             // TODO: 2016/7/26 瀑布流间隔
+            if (isPinnedHeader(parent, view)) {
+                outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
+            } else {
+                outRect.set(mDrawable.getIntrinsicWidth(), 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+            }
         }
     }
 
@@ -182,10 +197,10 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     }
 
-    // 画分割线
+    // 画分隔线
     private void drawDivider(Canvas c, RecyclerView parent) {
 
-        // 不让分割线画出界限
+        // 不让分隔线画出界限
         c.clipRect(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getWidth() - parent.getPaddingRight(), parent.getHeight() - parent.getPaddingBottom());
 
         if (parent.getLayoutManager() instanceof GridLayoutManager) {
@@ -221,7 +236,18 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
             // TODO: 2016/7/26 位置错乱有很大问题
-
+            int childCount = parent.getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                final View child = parent.getChildAt(i);
+                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                if (isPinnedHeader(parent, child)) {
+                    DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
+                } else {
+                    DividerHelper.drawLeft(c, mDrawable, child, params);
+                    DividerHelper.drawBottom(c, mDrawable, child, params);
+                    DividerHelper.drawRight(c, mDrawable, child, params);
+                }
+            }
         }
 
     }

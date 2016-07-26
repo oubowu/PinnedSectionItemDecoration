@@ -149,7 +149,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                 mPinnedHeaderOffset = 0;
             }
 
-//            Log.e("TAG", "SmallPinnedHeaderItemDecoration-152行-onDraw(): " + v.getTop() + ";" + mPinnedHeaderOffset);
+            //            Log.e("TAG", "SmallPinnedHeaderItemDecoration-152行-onDraw(): " + v.getTop() + ";" + mPinnedHeaderOffset);
 
             // 拿到锁定的矩形
             mClipBounds = c.getClipBounds();
@@ -316,14 +316,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             mPinnedHeaderView.setLayoutParams(lp);
         }
 
-        // 设置高度
-        int heightMode = View.MeasureSpec.getMode(lp.height);
-        int heightSize = View.MeasureSpec.getSize(lp.height);
-
-        if (heightMode == View.MeasureSpec.UNSPECIFIED) {
-            heightMode = View.MeasureSpec.EXACTLY;
-        }
-
         if (lp instanceof ViewGroup.MarginLayoutParams) {
             final ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams) lp;
             mHeaderLeftMargin = mlp.leftMargin;
@@ -332,13 +324,69 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             mHeaderBottomMargin = mlp.bottomMargin;
         }
 
-        // 最大高度为RecyclerView的高度减去padding
-        int maxHeight = mPinnedHeaderParentView.getHeight() - mPinnedHeaderParentView.getPaddingTop() - mPinnedHeaderParentView.getPaddingBottom();
+        // 设置高度
+        int heightMode = View.MeasureSpec.getMode(lp.height);
+        int heightSize = View.MeasureSpec.getSize(lp.height);
+
+        //        if (heightMode == View.MeasureSpec.UNSPECIFIED) {
+        //            heightMode = View.MeasureSpec.EXACTLY;
+        //        }
+
+        switch (heightMode) {
+            case View.MeasureSpec.UNSPECIFIED:
+                heightMode = View.MeasureSpec.EXACTLY;
+                break;
+            case View.MeasureSpec.EXACTLY:
+                heightMode = View.MeasureSpec.EXACTLY;
+                break;
+            case View.MeasureSpec.AT_MOST:
+                heightMode = View.MeasureSpec.AT_MOST;
+                break;
+            default:
+                heightMode = View.MeasureSpec.AT_MOST;
+                break;
+        }
+
+        // 最大高度为mPinnedHeaderParentView的高度减去padding
+        int maxHeight = mPinnedHeaderParentView.getMeasuredHeight() - mPinnedHeaderParentView.getPaddingTop() - mPinnedHeaderParentView.getPaddingBottom();
         heightSize = Math.min(heightSize, maxHeight);
 
         int hs = View.MeasureSpec.makeMeasureSpec(heightSize, heightMode);
+
+        // 设置宽度
+        int widthMode = View.MeasureSpec.getMode(lp.width);
+        int widthSize = View.MeasureSpec.getSize(lp.width);
+
+        //        if (widthMode == View.MeasureSpec.UNSPECIFIED) {
+        //            widthMode = View.MeasureSpec.EXACTLY;
+        //        }
+
+        switch (widthMode) {
+            case View.MeasureSpec.UNSPECIFIED:
+                widthMode = View.MeasureSpec.EXACTLY;
+                break;
+            case View.MeasureSpec.EXACTLY:
+                widthMode = View.MeasureSpec.EXACTLY;
+                break;
+            case View.MeasureSpec.AT_MOST:
+                widthMode = View.MeasureSpec.AT_MOST;
+                break;
+            default:
+                widthMode = View.MeasureSpec.AT_MOST;
+                break;
+        }
+
+        int maxWidth = mPinnedHeaderParentView.getMeasuredWidth() - mPinnedHeaderParentView.getPaddingLeft() - mPinnedHeaderParentView.getPaddingRight();
+        widthSize = Math.min(widthSize, maxWidth);
+
+        int ws = View.MeasureSpec.makeMeasureSpec(widthSize, widthMode);
+
+        // wrap_content,wrap_content 没问题
+        // 60dp，60dp 没问题
+        // wrap_content，60dp 有问题
+        // 60dp，wrap_content 有问题
         // 强制测量
-        mPinnedHeaderView.measure(ViewGroup.LayoutParams.WRAP_CONTENT, hs);
+        mPinnedHeaderView.measure(ws, hs);
 
     }
 
