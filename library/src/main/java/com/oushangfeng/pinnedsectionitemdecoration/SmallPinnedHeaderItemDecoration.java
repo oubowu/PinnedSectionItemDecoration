@@ -403,7 +403,8 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
         private boolean enableDivider;
 
-        public Builder() {
+        public Builder(int pinnedHeaderId) {
+            this.pinnedHeaderId = pinnedHeaderId;
         }
 
         public Builder<T> setHeaderClickListener(OnHeaderClickListener<T> headerClickListener) {
@@ -418,11 +419,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
         public Builder<T> enableDivider(boolean enableDivider) {
             this.enableDivider = enableDivider;
-            return this;
-        }
-
-        public Builder<T> setPinnedHeaderId(int pinnedHeaderId) {
-            this.pinnedHeaderId = pinnedHeaderId;
             return this;
         }
 

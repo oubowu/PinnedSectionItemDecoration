@@ -21,7 +21,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.7'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.7.1'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
@@ -107,7 +107,7 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     public PinnedHeaderItemDecoration(int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
     
     
-    // 现在也可以用创建者模式，更加灵活，注意必须enableDivider设置id才有效
+    // 现在也可以用创建者模式，更加灵活，注意必须enableDivider，设置id才有效
     mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener).create());
     
 ```
@@ -209,7 +209,7 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
     
     // 现在也可以用创建者模式
-    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder<String>().enableDivider(true).setDividerId(R.drawable.divider).setHeaderClickListener(headerClickListener).setPinnedHeaderId(R.id.tv_small_pinned_header).create());
+    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider).setHeaderClickListener(headerClickListener).create());
     
 ```
 

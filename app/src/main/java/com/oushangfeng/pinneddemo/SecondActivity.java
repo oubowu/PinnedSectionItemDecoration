@@ -128,7 +128,9 @@ public class SecondActivity extends AppCompatActivity {
             }
 
         };
-        mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder<String>().enableDivider(true).setDividerId(R.drawable.divider).setHeaderClickListener(headerClickListener).setPinnedHeaderId(R.id.tv_small_pinned_header).create());
+        mRecyclerView.addItemDecoration(
+                new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
+                        .setHeaderClickListener(headerClickListener).create());
         mRecyclerView.setAdapter(mAdapter);
 
     }
