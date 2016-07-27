@@ -78,13 +78,14 @@ public class SecondActivity extends AppCompatActivity {
             public void bindData(RecyclerViewHolder holder, int viewType, final int position, String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
-                        holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
+//                        holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
                         //                        holder.setOnClickListener(R.id.tv_small_pinned_header, new View.OnClickListener() {
                         //                            @Override
                         //                            public void onClick(View view) {
                         //                                Toast.makeText(SecondActivity.this, "标签是：" + getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                         //                            }
                         //                        });
+                        Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.tv_small_pinned_header));
                         Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
                         break;
                     case RecyclerAdapter.TYPE_DATA:

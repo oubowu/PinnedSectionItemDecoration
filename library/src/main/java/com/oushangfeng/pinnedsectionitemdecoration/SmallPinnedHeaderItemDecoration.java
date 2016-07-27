@@ -381,10 +381,6 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
         int ws = View.MeasureSpec.makeMeasureSpec(widthSize, widthMode);
 
-        // wrap_content,wrap_content 没问题
-        // 60dp，60dp 没问题
-        // wrap_content，60dp 有问题
-        // 60dp，wrap_content 有问题
         // 强制测量
         mPinnedHeaderView.measure(ws, hs);
 

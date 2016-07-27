@@ -9,7 +9,6 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -67,20 +66,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mRight;
     private int mBottom;
 
-    private SparseIntArray mHeaderFakePosition = new SparseIntArray();
-
-    private int mHeaderCount = 1;
-
-    /**
-     * 如果是网格布局使用了分隔线，Adapter刷新数据的时候，需要调用此方法
-     */
-    public void resetDivider(RecyclerView rv) {
-        if (mEnableDivider && rv.getLayoutManager() instanceof GridLayoutManager) {
-            mHeaderFakePosition.clear();
-            mHeaderCount = 1;
-        }
-    }
-
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
@@ -126,13 +111,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             if (!isPinnedHeader(parent, view)) {
                 final int spanCount = getSpanCount(parent);
                 int position = parent.getChildAdapterPosition(view);
-
-                if (mHeaderFakePosition.get(position) == 0) {
-                    mHeaderFakePosition.put(position, mHeaderCount - 1);
-                }
-                final int headerCount = mHeaderFakePosition.get(position);
-
-                position = position - headerCount;
                 if (isFirstColumn(parent, position, spanCount)) {
                     // 第一列要多画左边
                     outRect.set(mDrawable.getIntrinsicWidth(), 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
@@ -140,12 +118,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                     outRect.set(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
                 }
             } else {
-                int position = parent.getChildAdapterPosition(view);
-                if (mHeaderFakePosition.get(position) == 0) {
-                    // 记录头部出现的位置
-                    mHeaderFakePosition.put(position, mHeaderCount);
-                    mHeaderCount++;
-                }
                 // 标签画底部分隔线
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
             }
@@ -214,10 +186,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 if (isPinnedHeaderType(mAdapter.getItemViewType(realPosition))) {
                     DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
                 } else {
-                    final int headerCount = mHeaderFakePosition.get(realPosition);
-                    int fakePosition = realPosition - headerCount;
-                    // Log.e("TAG", "PinnedHeaderItemDecoration-200行-drawDivider(): " + child.getTop() + ";" + mPinnedHeaderView.getTop());
-                    if (isFirstColumn(parent, fakePosition, spanCount)) {
+                    if (isFirstColumn(parent, realPosition, spanCount)) {
                         DividerHelper.drawLeft(c, mDrawable, child, params);
                     }
                     DividerHelper.drawBottom(c, mDrawable, child, params);
@@ -438,7 +407,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      *
      * @param parent
      */
-    private void checkCache(RecyclerView parent) {
+    private void checkCache(final RecyclerView parent) {
         final RecyclerView.Adapter adapter = parent.getAdapter();
         if (mAdapter != adapter) {
             // 适配器为null或者不同，清空缓存
@@ -456,7 +425,9 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private boolean isFirstColumn(RecyclerView parent, int pos, int spanCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
-            if (pos % spanCount == 0) {
+            final int headerPosition = findPinnedHeaderPosition(pos);
+            if ((pos - (headerPosition + 1)) % spanCount == 0) {
+                // 找到头部位置减去包括头部位置之前的个数
                 return true;
             }
         } else if (layoutManager instanceof StaggeredGridLayoutManager) {

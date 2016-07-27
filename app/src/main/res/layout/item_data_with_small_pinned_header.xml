@@ -15,10 +15,10 @@
         android:background="#70E593"
         tools:src="@mipmap/panda0"/>
 
-    <TextView
+    <ImageView
         android:id="@+id/tv_small_pinned_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="#5A5A5A"
         android:padding="8dp"
         android:textColor="#ffffff"
