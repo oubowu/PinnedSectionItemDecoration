@@ -1,0 +1,250 @@
+{
+  "amplitude_list": [
+    {
+      "rate": 16.65150136487716,
+      "current_price": 21.85,
+      "stock_code": "000603",
+      "stock_name": "盛达矿业"
+    },
+    {
+      "rate": 14.835277266216494,
+      "current_price": 53.76,
+      "stock_code": "603268",
+      "stock_name": "松发股份"
+    },
+    {
+      "rate": 13.470031545741312,
+      "current_price": 29.15,
+      "stock_code": "000034",
+      "stock_name": "神州数码"
+    },
+    {
+      "rate": 13.147243545010449,
+      "current_price": 78.82,
+      "stock_code": "300515",
+      "stock_name": "三德科技"
+    },
+    {
+      "rate": 12.490922294843868,
+      "current_price": 15.15,
+      "stock_code": "603618",
+      "stock_name": "杭电股份"
+    },
+    {
+      "rate": 12.439193884642117,
+      "current_price": 31.5,
+      "stock_code": "300061",
+      "stock_name": "康耐特"
+    },
+    {
+      "rate": 12.325830653804934,
+      "current_price": 10.24,
+      "stock_code": "600975",
+      "stock_name": "新五丰"
+    },
+    {
+      "rate": 12.121212121212116,
+      "current_price": 6.06,
+      "stock_code": "000677",
+      "stock_name": "恒天海龙"
+    },
+    {
+      "rate": 11.95270785659802,
+      "current_price": 132.41,
+      "stock_code": "300501",
+      "stock_name": "海顺新材"
+    },
+    {
+      "rate": 11.49732620320855,
+      "current_price": 20.04,
+      "stock_code": "000532",
+      "stock_name": "力合股份"
+    }
+  ],
+  "down_list": [
+    {
+      "rate": -10,
+      "current_price": 24.75,
+      "stock_code": "000638",
+      "stock_name": "万方发展"
+    },
+    {
+      "rate": -9.999999999999993,
+      "current_price": 19.35,
+      "stock_code": "002089",
+      "stock_name": "新 海 宜"
+    },
+    {
+      "rate": -9.99907757586939,
+      "current_price": 97.57,
+      "stock_code": "300500",
+      "stock_name": "苏州设计"
+    },
+    {
+      "rate": -9.991442019683358,
+      "current_price": 42.07,
+      "stock_code": "300450",
+      "stock_name": "先导智能"
+    },
+    {
+      "rate": -9.988901220865708,
+      "current_price": 16.22,
+      "stock_code": "600692",
+      "stock_name": "亚通股份"
+    },
+    {
+      "rate": -9.987357774968395,
+      "current_price": 7.12,
+      "stock_code": "000672",
+      "stock_name": "上峰水泥"
+    },
+    {
+      "rate": -9.984116178806442,
+      "current_price": 39.67,
+      "stock_code": "300292",
+      "stock_name": "吴通控股"
+    },
+    {
+      "rate": -9.92907801418439,
+      "current_price": 5.08,
+      "stock_code": "300372",
+      "stock_name": "*欣泰"
+    },
+    {
+      "rate": -9.181636726546909,
+      "current_price": 22.75,
+      "stock_code": "002738",
+      "stock_name": "中矿资源"
+    },
+    {
+      "rate": -9.11722141823444,
+      "current_price": 62.8,
+      "stock_code": "603909",
+      "stock_name": "合诚股份"
+    }
+  ],
+  "change_list": [
+    {
+      "rate": 0.5176,
+      "current_price": 108,
+      "stock_code": "300519",
+      "stock_name": "新光药业"
+    },
+    {
+      "rate": 0.482,
+      "current_price": 94.08,
+      "stock_code": "300522",
+      "stock_name": "世名科技"
+    },
+    {
+      "rate": 0.4057,
+      "current_price": 62.8,
+      "stock_code": "603909",
+      "stock_name": "合诚股份"
+    },
+    {
+      "rate": 0.3612,
+      "current_price": 42.77,
+      "stock_code": "603016",
+      "stock_name": "新宏泰"
+    },
+    {
+      "rate": 0.3534,
+      "current_price": 58.27,
+      "stock_code": "002802",
+      "stock_name": "洪汇新材"
+    },
+    {
+      "rate": 0.3446,
+      "current_price": 15.15,
+      "stock_code": "603618",
+      "stock_name": "杭电股份"
+    },
+    {
+      "rate": 0.3104,
+      "current_price": 78.82,
+      "stock_code": "300515",
+      "stock_name": "三德科技"
+    },
+    {
+      "rate": 0.3053,
+      "current_price": 53.76,
+      "stock_code": "603268",
+      "stock_name": "松发股份"
+    },
+    {
+      "rate": 0.2631,
+      "current_price": 97.57,
+      "stock_code": "300500",
+      "stock_name": "苏州设计"
+    },
+    {
+      "rate": 0.2487,
+      "current_price": 156,
+      "stock_code": "002801",
+      "stock_name": "微光股份"
+    }
+  ],
+  "increase_list": [
+    {
+      "rate": 10.040983606557381,
+      "current_price": 5.37,
+      "stock_code": "300135",
+      "stock_name": "宝利国际"
+    },
+    {
+      "rate": 10.038910505836583,
+      "current_price": 14.14,
+      "stock_code": "000610",
+      "stock_name": "西安旅游"
+    },
+    {
+      "rate": 10.038610038610047,
+      "current_price": 11.4,
+      "stock_code": "600761",
+      "stock_name": "安徽合力"
+    },
+    {
+      "rate": 10.038022813688215,
+      "current_price": 14.47,
+      "stock_code": "002243",
+      "stock_name": "通产丽星"
+    },
+    {
+      "rate": 10.025974025974024,
+      "current_price": 21.18,
+      "stock_code": "300517",
+      "stock_name": "海波重科"
+    },
+    {
+      "rate": 10.021786492374734,
+      "current_price": 15.15,
+      "stock_code": "603618",
+      "stock_name": "杭电股份"
+    },
+    {
+      "rate": 10.015251652262322,
+      "current_price": 21.64,
+      "stock_code": "002803",
+      "stock_name": "吉宏股份"
+    },
+    {
+      "rate": 10.01353179972938,
+      "current_price": 8.13,
+      "stock_code": "000721",
+      "stock_name": "西安饮食"
+    },
+    {
+      "rate": 10.01001001001001,
+      "current_price": 21.98,
+      "stock_code": "600848",
+      "stock_name": "上海临港"
+    },
+    {
+      "rate": 10.008857395925606,
+      "current_price": 24.84,
+      "stock_code": "300143",
+      "stock_name": "星河生物"
+    }
+  ]
+}

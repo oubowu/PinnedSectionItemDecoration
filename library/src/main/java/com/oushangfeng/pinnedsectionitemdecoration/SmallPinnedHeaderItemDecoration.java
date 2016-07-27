@@ -167,6 +167,11 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
     private void drawDivider(Canvas c, RecyclerView parent) {
 
+        if (mAdapter == null) {
+            // checkCache的话RecyclerView未设置之前mAdapter为空
+            return;
+        }
+
         // 不让分割线画出界限
         c.clipRect(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getWidth() - parent.getPaddingRight(), parent.getHeight() - parent.getPaddingBottom());
 
@@ -205,6 +210,11 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     // 创建标签
     @SuppressWarnings("unchecked")
     private void createPinnedHeader(RecyclerView parent) {
+
+        if (mAdapter == null) {
+            // checkCache的话RecyclerView未设置之前mAdapter为空
+            return;
+        }
 
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
@@ -256,7 +266,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                 }
             }
             if (mHeaderClickListener != null) {
-                mItemTouchListener.setClickHeaderInfo(((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition));
+                mItemTouchListener.setClickHeaderInfo(mHeaderPosition, ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition));
             }
 
         }

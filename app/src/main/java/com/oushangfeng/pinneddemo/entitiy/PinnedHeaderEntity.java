@@ -11,24 +11,35 @@ public class PinnedHeaderEntity<T> {
 
     private int type;
 
-    public PinnedHeaderEntity(T data, int type) {
+    private String pinnedHeaderName;
+
+    public PinnedHeaderEntity(T data, int type, String pinnedHeaderName) {
         this.data = data;
         this.type = type;
-    }
-
-    public T getData() {
-        return data;
+        this.pinnedHeaderName = pinnedHeaderName;
     }
 
     public void setData(T data) {
         this.data = data;
     }
 
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    public void setPinnedHeaderName(String pinnedHeaderName) {
+        this.pinnedHeaderName = pinnedHeaderName;
+    }
+
+    public T getData() {
+        return data;
+    }
+
     public int getType() {
         return type;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public String getPinnedHeaderName() {
+        return pinnedHeaderName;
     }
 }

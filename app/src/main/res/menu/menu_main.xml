@@ -18,6 +18,11 @@
         android:title="瀑布流布局"
         app:showAsAction="never"/>
     <item
+        android:id="@+id/to_stock"
+        android:orderInCategory="100"
+        android:title="股价demo"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/to_second"
         android:orderInCategory="100"
         android:title="小标签demo"

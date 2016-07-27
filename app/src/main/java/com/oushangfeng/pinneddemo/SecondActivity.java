@@ -11,7 +11,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
 import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
-import com.oushangfeng.pinneddemo.entitiy.SmallPinnedHeaderEntity;
+import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.SmallPinnedHeaderItemDecoration;
@@ -23,7 +23,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
 
-    private RecyclerAdapter<String, SmallPinnedHeaderEntity<String>> mAdapter;
+    private RecyclerAdapter<String, PinnedHeaderEntity<String>> mAdapter;
 
     private int[] mDogs = {R.mipmap.dog0, R.mipmap.dog1, R.mipmap.dog2, R.mipmap.dog3, R.mipmap.dog4, R.mipmap.dog5, R.mipmap.dog6, R.mipmap.dog7, R.mipmap.dog8};
     private int[] mCats = {R.mipmap.cat0, R.mipmap.cat1, R.mipmap.cat2, R.mipmap.cat3, R.mipmap.cat4, R.mipmap.cat5, R.mipmap.cat6, R.mipmap.cat7, R.mipmap.cat8};
@@ -40,29 +40,29 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        final List<SmallPinnedHeaderEntity<String>> data = new ArrayList<>();
+        final List<PinnedHeaderEntity<String>> data = new ArrayList<>();
         int i = 0;
         for (int dog : mDogs) {
-            data.add(new SmallPinnedHeaderEntity<>(dog + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "狗狗"));
+            data.add(new PinnedHeaderEntity<>(dog + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "狗狗"));
             i++;
         }
         i = 0;
         for (int cat : mCats) {
-            data.add(new SmallPinnedHeaderEntity<>(cat + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "猫咪"));
+            data.add(new PinnedHeaderEntity<>(cat + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "猫咪"));
             i++;
         }
         i = 0;
         for (int rabbit : mRabbits) {
-            data.add(new SmallPinnedHeaderEntity<>(rabbit + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "兔子"));
+            data.add(new PinnedHeaderEntity<>(rabbit + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "兔子"));
             i++;
         }
         i = 0;
         for (int panda : mPandas) {
-            data.add(new SmallPinnedHeaderEntity<>(panda + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "熊猫"));
+            data.add(new PinnedHeaderEntity<>(panda + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "熊猫"));
             i++;
         }
 
-        mAdapter = new RecyclerAdapter<String, SmallPinnedHeaderEntity<String>>() {
+        mAdapter = new RecyclerAdapter<String, PinnedHeaderEntity<String>>() {
             @Override
             public int getItemLayoutId(int viewType) {
                 switch (viewType) {
@@ -78,7 +78,7 @@ public class SecondActivity extends AppCompatActivity {
             public void bindData(RecyclerViewHolder holder, int viewType, final int position, String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
-//                        holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
+                        //                        holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
                         //                        holder.setOnClickListener(R.id.tv_small_pinned_header, new View.OnClickListener() {
                         //                            @Override
                         //                            public void onClick(View view) {
@@ -114,17 +114,17 @@ public class SecondActivity extends AppCompatActivity {
         //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false));
         OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
             @Override
-            public void onHeaderClick(String data) {
+            public void onHeaderClick(int position, String data) {
                 Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(String data) {
+            public void onHeaderLongClick(int position, String data) {
                 Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(String data) {
+            public void onHeaderDoubleClick(int position, String data) {
                 Toast.makeText(SecondActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 

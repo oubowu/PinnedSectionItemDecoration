@@ -25,6 +25,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
     private OnHeaderClickListener<T> mHeaderClickListener;
 
     private T mClickHeaderInfo;
+    private int mPosition;
 
     public OnItemTouchListener(Context context, int left, int top, int right, int bottom) {
         mLeft = left;
@@ -59,7 +60,8 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
     public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
     }
 
-    public void setClickHeaderInfo(T clickHeaderInfo) {
+    public void setClickHeaderInfo(int position, T clickHeaderInfo) {
+        mPosition = position;
         mClickHeaderInfo = clickHeaderInfo;
     }
 
@@ -92,7 +94,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderLongClick(mClickHeaderInfo);
+                mHeaderClickListener.onHeaderLongClick(mPosition, mClickHeaderInfo);
             }
 
         }
@@ -111,7 +113,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderClick(mClickHeaderInfo);
+                mHeaderClickListener.onHeaderClick(mPosition, mClickHeaderInfo);
             }
 
             return super.onSingleTapConfirmed(e);
@@ -127,7 +129,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderDoubleClick(mClickHeaderInfo);
+                mHeaderClickListener.onHeaderDoubleClick(mPosition, mClickHeaderInfo);
             }
 
             // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理

@@ -23,6 +23,11 @@
             android:label="@string/title_activity_second"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".StockActivity"
+            android:label="@string/title_activity_stock"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>

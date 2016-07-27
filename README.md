@@ -22,7 +22,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.8'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.8.1'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
@@ -80,17 +80,17 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     // 监听，注意这个只是会监听顶部标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
     OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
         @Override
-        public void onHeaderClick(String data) {
+        public void onHeaderClick(int position, String data) {
             Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onHeaderLongClick(String data) {
+        public void onHeaderLongClick(int position, String data) {
             Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
         
         @Override
-        public void onHeaderDoubleClick(String data) {
+        public void onHeaderDoubleClick(int position, String data) {
             Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
         }        
         
@@ -181,17 +181,17 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     // 监听，注意这个只是会监听顶部小标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
     OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
         @Override
-        public void onHeaderClick(String data) {
+        public void onHeaderClick(int position, String data) {
             Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
 
         @Override
-        public void onHeaderLongClick(String data) {
+        public void onHeaderLongClick(int position, String data) {
             Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
         }
         
         @Override
-        public void onHeaderDoubleClick(String data) {
+        public void onHeaderDoubleClick(int position, String data) {
             Toast.makeText(SecondActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
         }               
         

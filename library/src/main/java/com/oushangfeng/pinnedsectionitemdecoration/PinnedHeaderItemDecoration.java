@@ -120,9 +120,9 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
             }
         } else if (parent.getLayoutManager() instanceof LinearLayoutManager) {
-            if (!isPinnedHeader(parent, view)) {
-                outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
-            }
+            //            if (!isPinnedHeader(parent, view)) {
+            outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
+            //            }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
             if (isPinnedHeader(parent, view)) {
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
@@ -141,10 +141,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-
-        if (mEnableDivider) {
-            drawDivider(c, parent);
-        }
 
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
@@ -170,10 +166,19 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             c.clipRect(mClipBounds);
         }
 
+        if (mEnableDivider) {
+            drawDivider(c, parent);
+        }
+
     }
 
     // 画分隔线
     private void drawDivider(Canvas c, RecyclerView parent) {
+
+        if (mAdapter == null) {
+            // checkCache的话RecyclerView未设置之前mAdapter为空
+            return;
+        }
 
         // 不让分隔线画出界限
         c.clipRect(parent.getPaddingLeft(), parent.getPaddingTop(), parent.getWidth() - parent.getPaddingRight(), parent.getHeight() - parent.getPaddingBottom());
@@ -200,11 +205,11 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = parent.getChildAt(i);
-                int realPosition = parent.getChildAdapterPosition(child);
-                if (!isPinnedHeaderType(mAdapter.getItemViewType(realPosition))) {
-                    final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
-                    DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
-                }
+                //                int realPosition = parent.getChildAdapterPosition(child);
+                //                if (!isPinnedHeaderType(mAdapter.getItemViewType(realPosition))) {
+                final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
+                DividerHelper.drawBottomAlignItem(c, mDrawable, child, params);
+                //                }
             }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
             int childCount = parent.getChildCount();
@@ -225,6 +230,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
+
         if (mPinnedHeaderView != null) {
             c.save();
 
@@ -266,6 +272,11 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      */
     @SuppressWarnings("unchecked")
     private void createPinnedHeader(RecyclerView parent) {
+
+        if (mAdapter == null) {
+            // checkCache的话RecyclerView未设置之前mAdapter为空
+            return;
+        }
 
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
@@ -344,7 +355,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 }
             }
             if (mHeaderClickListener != null) {
-                mItemTouchListener.setClickHeaderInfo(((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition));
+                mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition, ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition));
             }
 
         }

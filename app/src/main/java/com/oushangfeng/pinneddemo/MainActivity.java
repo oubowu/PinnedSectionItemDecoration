@@ -1,6 +1,5 @@
 package com.oushangfeng.pinneddemo;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -49,21 +48,21 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle("BigPinnedHeader");
 
         List<PinnedHeaderEntity<String>> data = new ArrayList<>();
-        data.add(new PinnedHeaderEntity<>("狗狗", RecyclerAdapter.TYPE_SECTION));
+        data.add(new PinnedHeaderEntity<>("狗狗", RecyclerAdapter.TYPE_SECTION, "狗狗"));
         for (int dog : mDogs) {
-            data.add(new PinnedHeaderEntity<>(dog + "", RecyclerAdapter.TYPE_DATA));
+            data.add(new PinnedHeaderEntity<>(dog + "", RecyclerAdapter.TYPE_DATA, "狗狗"));
         }
-        data.add(new PinnedHeaderEntity<>("猫咪", RecyclerAdapter.TYPE_SECTION));
+        data.add(new PinnedHeaderEntity<>("猫咪", RecyclerAdapter.TYPE_SECTION, "猫咪"));
         for (int cat : mCats) {
-            data.add(new PinnedHeaderEntity<>(cat + "", RecyclerAdapter.TYPE_DATA));
+            data.add(new PinnedHeaderEntity<>(cat + "", RecyclerAdapter.TYPE_DATA, "猫咪"));
         }
-        data.add(new PinnedHeaderEntity<>("兔子", RecyclerAdapter.TYPE_SECTION));
+        data.add(new PinnedHeaderEntity<>("兔子", RecyclerAdapter.TYPE_SECTION, "兔子"));
         for (int rabbit : mRabbits) {
-            data.add(new PinnedHeaderEntity<>(rabbit + "", RecyclerAdapter.TYPE_DATA));
+            data.add(new PinnedHeaderEntity<>(rabbit + "", RecyclerAdapter.TYPE_DATA, "兔子"));
         }
-        data.add(new PinnedHeaderEntity<>("熊猫", RecyclerAdapter.TYPE_SECTION));
+        data.add(new PinnedHeaderEntity<>("熊猫", RecyclerAdapter.TYPE_SECTION, "熊猫"));
         for (int panda : mPandas) {
-            data.add(new PinnedHeaderEntity<>(panda + "", RecyclerAdapter.TYPE_DATA));
+            data.add(new PinnedHeaderEntity<>(panda + "", RecyclerAdapter.TYPE_DATA, "熊猫"));
         }
 
         mAdapter = new RecyclerAdapter<String, PinnedHeaderEntity<String>>() {
@@ -133,19 +132,20 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
             @Override
-            public void onHeaderClick(String data) {
+            public void onHeaderClick(int position, String data) {
                 Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(String data) {
+            public void onHeaderLongClick(int position, String data) {
                 Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(String data) {
+            public void onHeaderDoubleClick(int position, String data) {
                 Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
+
         };
         mRecyclerView.addItemDecoration(
                 new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener)
@@ -177,17 +177,15 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
                 mAdapter.notifyDataSetChanged();
                 break;
+            case R.id.to_stock:
+                startActivity(new Intent(this, StockActivity.class));
+                break;
             case R.id.to_second:
                 startActivity(new Intent(this, SecondActivity.class));
                 break;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private int dip2px(Context context, float dpValue) {
-        final float scale = context.getResources().getDisplayMetrics().density;
-        return (int) (dpValue * scale + 0.5f);
     }
 
 }
