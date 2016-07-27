@@ -132,20 +132,19 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
             @Override
-            public void onHeaderClick(int position, String data) {
+            public void onHeaderClick(int id, int position, String data) {
                 Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(int position, String data) {
+            public void onHeaderLongClick(int id, int position, String data) {
                 Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(int position, String data) {
+            public void onHeaderDoubleClick(int id, int position, String data) {
                 Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
             }
-
         };
         mRecyclerView.addItemDecoration(
                 new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener)

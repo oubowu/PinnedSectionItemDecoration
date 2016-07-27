@@ -3,8 +3,9 @@
 ## 功能
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
-- 支持标签单击、双击和长按事件
-- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考([MainActivity 99-115行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java))
+- 支持标签的单击、双击和长按事件
+- 支持标签内部子控件的单击、双击和长按事件
+- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 99-115行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
 
 ## 效果图
 - 不带分隔线<br>
@@ -12,6 +13,7 @@
 ![大标签网格布局](/pic/big_header_gridlayout.gif) 
 ![大标签瀑布流布局](/pic/big_header_staggeredgridlayout.gif) 
 ![小标签线性布局](/pic/small_header_linearlayout.gif) 
+![股市Demo](/pic/stock_demo.gif) 
 - 带分隔线<br>
 ![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
 ![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
@@ -22,10 +24,10 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.8.1'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.9'
 ```
 
-RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
+RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)「[供参考的RecyclerAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)」
 ```
     @Override
     public boolean isPinnedHeaderType(int viewType) {
@@ -75,41 +77,38 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     }
 ```
 
-实现大粘性标签Recyclerview只需要添加一个PinnedHeaderItemDecoration，然后可以传入一个标签的点击监听，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)
+实现大粘性标签RecyclerView只需要添加一个PinnedHeaderItemDecoration，由于参数太多，现在只支持使用创建者模式创建，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决往上滚动遮不住真正的标签「[供参考的StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java)」
 ``` 
-    // 监听，注意这个只是会监听顶部标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
-    OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
-        @Override
-        public void onHeaderClick(int position, String data) {
-            Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }
 
-        @Override
-        public void onHeaderLongClick(int position, String data) {
-            Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }
-        
-        @Override
-        public void onHeaderDoubleClick(int position, String data) {
-            Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }        
-        
-    };
-    mRecyclerview.addItemDecoration(new PinnedHeaderItemDecoration<String>(headerClickListener));
-    
-    // 现在有三种带参构造方法，支持设置分隔线的样式
-   
-    public PinnedHeaderItemDecoration(OnHeaderClickListener<T> headerClickListener) 
-   
-    // enableDivider为true的话，使用默认的样式
-    public PinnedHeaderItemDecoration(boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
-   
-    // enableDivider为true以及id有效，使用自定义的样式
-    public PinnedHeaderItemDecoration(int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
-    
-    
-    // 现在也可以用创建者模式，更加灵活，注意必须enableDivider，设置id才有效
-    mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener).create());
+     final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+
+         @Override
+         public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
+             switch (id) {
+                 case OnItemTouchListener.HEADER_ID:
+                     Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                     break;
+                 case R.id.iv_more:
+                     Toast.makeText(StockActivity.this, "点击了标签的更多按钮", Toast.LENGTH_SHORT).show();
+                     break;
+             }
+         }
+
+     };
+
+     mRecyclerView.addItemDecoration(
+             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>()
+             // 设置分隔线资源ID
+             .setDividerId(R.drawable.divider)
+             // 开启绘制分隔线，默认关闭
+             .enableDivider(true)
+             // 通过传入包括标签和其内部的子控件的ID设置其对应的点击事件，注意必须要按照布局View从最外层到底层的顺序传入ID，这样子我才能确定它们响应的优先级
+             .setClickIds(R.id.iv_more)
+             // 开启标签点击事件(不包括标签里面的子控件)，默认开启
+             .disableHeaderClick(false)
+             // 设置标签和其内部的子控件的监听
+             .setHeaderClickListener(clickAdapter)
+             .create());
     
 ```
 ![大标签布局](/pic/big_pinned_header.png) 
@@ -176,41 +175,32 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 ```
 ![布局B](/pic/small_pinned_header.png) 
 
-布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签Recyclerview只需要添加一个SmallPinnedHeaderItemDecoration，然后可以传入一个标签的点击监听，传入的id即为小标签的id，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签[(供参考的Activity)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)
+布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签RecyclerView只需要添加一个SmallPinnedHeaderItemDecoration，只支持使用创建者模式创建，注意标签不能设置marginTop，因为往上滚动遮不住真正的标签「[供参考的SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)」
 ```
-    // 监听，注意这个只是会监听顶部小标签，其它的标签需要自己在适配器设置点击事件，除OnHeaderClickListener接口也可以创建OnHeaderClickAdapter处理其中一种事件
-    OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
-        @Override
-        public void onHeaderClick(int position, String data) {
-            Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }
+     OnHeaderClickAdapter<String> headerClickAdapter = new OnHeaderClickAdapter<String>() {
 
-        @Override
-        public void onHeaderLongClick(int position, String data) {
-            Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }
-        
-        @Override
-        public void onHeaderDoubleClick(int position, String data) {
-            Toast.makeText(SecondActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
-        }               
-        
-    };
-    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration<String>(R.id.tv_small_pinned_header, headerClickListener));
-    
-    
-    // 现在有四种带参构造方法，支持设置分隔线的样式，与上面的同理
-    
-    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId);
-
-    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, OnHeaderClickListener<T> headerClickListener);
-
-    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
-
-    public SmallPinnedHeaderItemDecoration(int pinnedHeaderId, int dividerId, boolean enableDivider, OnHeaderClickListener<T> headerClickListener);
-    
-    // 现在也可以用创建者模式
-    mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider).setHeaderClickListener(headerClickListener).create());
+         @Override
+         public void onHeaderClick(int id, int position, String data) {
+             if (id == R.id.tv_small_pinned_header) {
+                 Toast.makeText(SecondActivity.this, "点击了标签: " + data, Toast.LENGTH_SHORT).show();
+             }
+         }
+     };
+     mRecyclerView.addItemDecoration(
+             // 构造方法需要传入小标签的ID
+             new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header)
+             // 开启绘制分隔线，默认关闭
+             .enableDivider(true)
+             // 设置分隔线资源ID
+             .setDividerId(R.drawable.divider)
+             // 关闭标签点击事件(不包括标签里面的子控件)
+             .disableHeaderClick(true)
+             // 通过传入包括标签和其内部的子控件的ID设置其对应的点击事件，注意必须要按照布局View从最外层到底层的顺序传入ID，这样子我才能确定它们响应的优先级
+             // 这里我虽然关闭了标签点击事件，但是又传入了标签的ID，所以点击事件仍旧会发生
+             .setClickIds(R.id.tv_small_pinned_header)
+             // 设置标签和其内部的子控件的监听
+             .setHeaderClickListener(headerClickAdapter)
+             .create());
     
 ```
 

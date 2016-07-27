@@ -7,10 +7,10 @@ package com.oushangfeng.pinnedsectionitemdecoration.callback;
  */
 public interface OnHeaderClickListener<T> {
 
-    void onHeaderClick(int position, T data);
+    void onHeaderClick(int id, int position, T data);
 
-    void onHeaderLongClick(int position, T data);
+    void onHeaderLongClick(int id, int position, T data);
 
-    void onHeaderDoubleClick(int position, T data);
+    void onHeaderDoubleClick(int id, int position, T data);
 
 }

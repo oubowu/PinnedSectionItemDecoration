@@ -13,8 +13,8 @@ import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
 import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.SmallPinnedHeaderItemDecoration;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,13 +78,6 @@ public class SecondActivity extends AppCompatActivity {
             public void bindData(RecyclerViewHolder holder, int viewType, final int position, String item) {
                 switch (viewType) {
                     case RecyclerAdapter.TYPE_SECTION:
-                        //                        holder.setText(R.id.tv_small_pinned_header, this.getData().get(position).getPinnedHeaderName());
-                        //                        holder.setOnClickListener(R.id.tv_small_pinned_header, new View.OnClickListener() {
-                        //                            @Override
-                        //                            public void onClick(View view) {
-                        //                                Toast.makeText(SecondActivity.this, "标签是：" + getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-                        //                            }
-                        //                        });
                         Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.tv_small_pinned_header));
                         Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
                         break;
@@ -112,26 +105,18 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false));
-        OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
-            @Override
-            public void onHeaderClick(int position, String data) {
-                Toast.makeText(SecondActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
-            }
+        OnHeaderClickAdapter<String> headerClickAdapter = new OnHeaderClickAdapter<String>() {
 
             @Override
-            public void onHeaderLongClick(int position, String data) {
-                Toast.makeText(SecondActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+            public void onHeaderClick(int id, int position, String data) {
+                if (id == R.id.tv_small_pinned_header) {
+                    Toast.makeText(SecondActivity.this, "点击了标签: " + data, Toast.LENGTH_SHORT).show();
+                }
             }
-
-            @Override
-            public void onHeaderDoubleClick(int position, String data) {
-                Toast.makeText(SecondActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
-            }
-
         };
         mRecyclerView.addItemDecoration(
                 new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
-                        .setHeaderClickListener(headerClickListener).create());
+                        .disableHeaderClick(true).setClickIds(R.id.tv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
         mRecyclerView.setAdapter(mAdapter);
 
     }

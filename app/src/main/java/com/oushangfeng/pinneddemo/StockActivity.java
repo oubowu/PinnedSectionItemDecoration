@@ -22,6 +22,7 @@ import com.oushangfeng.pinneddemo.entitiy.StockEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
+import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -50,13 +51,26 @@ public class StockActivity extends AppCompatActivity {
             protected void onPreExecute() {
 
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(StockActivity.this, LinearLayoutManager.VERTICAL, false));
-                mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().enableDivider(true)
-                        .setHeaderClickListener(new OnHeaderClickAdapter<StockEntity.StockInfo>() {
-                            @Override
-                            public void onHeaderClick(int position, StockEntity.StockInfo data) {
-                                Toast.makeText(StockActivity.this, "标签是：" + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-                            }
-                        }).create());
+
+                final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+
+                    @Override
+                    public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
+                        switch (id) {
+                            case OnItemTouchListener.HEADER_ID:
+                                Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                                break;
+                            case R.id.iv_more:
+                                Toast.makeText(StockActivity.this, "点击了标签的更多按钮", Toast.LENGTH_SHORT).show();
+                                break;
+                        }
+                    }
+
+                };
+
+                mRecyclerView.addItemDecoration(
+                        new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true).setClickIds(R.id.iv_more)
+                                .disableHeaderClick(false).setHeaderClickListener(clickAdapter).create());
 
                 mAdapter = new RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>>() {
                     @Override

@@ -2,8 +2,11 @@ package com.oushangfeng.pinnedsectionitemdecoration.callback;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+
+import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 
 /**
  * Created by Oubowu on 2016/7/24 20:51.
@@ -12,36 +15,56 @@ import android.view.MotionEvent;
  */
 public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener {
 
+    /**
+     * 代表的是标签的Id
+     */
+    public static final int HEADER_ID = -1;
+
+    private int mLastClickId;
+
     private GestureDetector mGestureDetector;
 
-    private int mLeft;
-    private int mTop;
-    private int mRight;
-
-    private int mBottom;
+    private SparseArray<ClickBounds> mBounds;
 
     private boolean mIntercept;
 
     private OnHeaderClickListener<T> mHeaderClickListener;
 
     private T mClickHeaderInfo;
+
     private int mPosition;
 
-    public OnItemTouchListener(Context context, int left, int top, int right, int bottom) {
-        mLeft = left;
-        mTop = top;
-        mRight = right;
-        mBottom = bottom;
+    private boolean mDisableHeaderClick;
+
+    public OnItemTouchListener(Context context) {
+
+        mBounds = new SparseArray<>();
 
         GestureListener gestureListener = new GestureListener();
         mGestureDetector = new GestureDetector(context, gestureListener);
     }
 
-    public void setBounds(int left, int top, int right, int bottom) {
-        mLeft = left;
-        mTop = top;
-        mRight = right;
-        mBottom = bottom;
+    /**
+     * 设置对应的View的点击范围
+     *
+     * @param id     View的ID
+     * @param bounds 点击范围
+     */
+    public void setViewAndBounds(int id, ClickBounds bounds) {
+        mBounds.put(id, bounds);
+    }
+
+    /**
+     * 更新点击范围的顶部和底部
+     *
+     * @param offset 偏差
+     */
+    public void invalidTopAndBottom(int offset) {
+        for (int i = 0; i < mBounds.size(); i++) {
+            final ClickBounds bounds = mBounds.valueAt(i);
+            bounds.setTop(bounds.getFirstTop() + offset);
+            bounds.setBottom(bounds.getFirstBottom() + offset);
+        }
     }
 
     @Override
@@ -69,6 +92,10 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
         mHeaderClickListener = headerClickListener;
     }
 
+    public void disableHeaderClick(boolean disableHeaderClick) {
+        mDisableHeaderClick = disableHeaderClick;
+    }
+
     private class GestureListener extends GestureDetector.SimpleOnGestureListener {
 
         private boolean mDoubleTap;
@@ -94,7 +121,10 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderLongClick(mPosition, mClickHeaderInfo);
+                if ((mLastClickId == HEADER_ID && !mDisableHeaderClick) || mLastClickId != HEADER_ID) {
+                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
+                    mHeaderClickListener.onHeaderLongClick(mLastClickId, mPosition, mClickHeaderInfo);
+                }
             }
 
         }
@@ -113,7 +143,10 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderClick(mPosition, mClickHeaderInfo);
+                if ((mLastClickId == HEADER_ID && !mDisableHeaderClick) || mLastClickId != HEADER_ID) {
+                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
+                    mHeaderClickListener.onHeaderClick(mLastClickId, mPosition, mClickHeaderInfo);
+                }
             }
 
             return super.onSingleTapConfirmed(e);
@@ -129,7 +162,10 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
 
             if (mIntercept && mHeaderClickListener != null) {
                 // 自己处理点击标签事件
-                mHeaderClickListener.onHeaderDoubleClick(mPosition, mClickHeaderInfo);
+                if ((mLastClickId == HEADER_ID && !mDisableHeaderClick) || mLastClickId != HEADER_ID) {
+                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
+                    mHeaderClickListener.onHeaderDoubleClick(mLastClickId, mPosition, mClickHeaderInfo);
+                }
             }
 
             // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理
@@ -145,7 +181,20 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
         float downY = e.getY();
 
         // 如果坐标在标签的范围内的话就屏蔽事件，自己处理
-        mIntercept = downX >= mLeft && downX <= mRight && downY >= mTop && downY <= mBottom;
+        //  mIntercept = downX >= mLeft && downX <= mRight && downY >= mTop && downY <= mBottom;
+
+        boolean tmp;
+
+        for (int i = 0; i < mBounds.size(); i++) {
+            // 逐个View拿出，判断坐标是否落在View的范围里面
+            final int id = mBounds.keyAt(i);
+            final ClickBounds bounds = mBounds.valueAt(i);
+            tmp = downX >= bounds.getLeft() && downX <= bounds.getRight() && downY >= bounds.getTop() && downY <= bounds.getBottom();
+            if (tmp) {
+                mLastClickId = id;
+                mIntercept = true;
+            }
+        }
 
         // Log.e("TAG", "OnRecyclerItemTouchListener-110行-judge(): " + (mIntercept ? "屏蔽" : "不屏蔽"));
 
