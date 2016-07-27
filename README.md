@@ -4,7 +4,7 @@
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签单击、双击和长按事件
-- 可以设置各种布局的分隔线(还差一个瀑布流的分隔线正在进行中......-_-)
+- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考([MainActivity 99-115行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java))
 
 ## 效果图
 - 不带分隔线<br>
@@ -15,13 +15,14 @@
 - 带分隔线<br>
 ![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
 ![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
+![大标签瀑布流布局带分隔线](/pic/big_header_staggeredgrid_divider.png) 
 ![小标签线性布局带分隔线](/pic/small_header_linear_divider.png) 
 
 ## 它能做什么？
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.7.5'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.0.8'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)[(供参考的RecyclerAdapter)](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)
@@ -214,7 +215,6 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 ```
 
 ## 后续
-- 会实现不同布局管理器Item间的间隔的绘制(还差瀑布流布局)
 - 解决不能设置marginTop的问题
 - 解决设置marginBottom位置不对的问题
 

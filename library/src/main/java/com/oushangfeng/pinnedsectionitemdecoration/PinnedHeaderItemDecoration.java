@@ -95,8 +95,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     @Override
     public void getItemOffsets(final Rect outRect, final View view, final RecyclerView parent, RecyclerView.State state) {
 
-        // Log.e("TAG", "PinnedHeaderItemDecoration-92行-getItemOffsets(): ");
-
         checkCache(parent);
 
         if (!mEnableDivider) {
@@ -126,11 +124,16 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
             }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
-            // TODO: 2016/7/26 瀑布流间隔
             if (isPinnedHeader(parent, view)) {
                 outRect.set(0, 0, 0, mDrawable.getIntrinsicHeight());
             } else {
-                outRect.set(mDrawable.getIntrinsicWidth(), 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+                final StaggeredGridLayoutManager.LayoutParams slp = (StaggeredGridLayoutManager.LayoutParams) view.getLayoutParams();
+                // slp.getSpanIndex(): 这个可以拿到它在同一行排序的真实顺序
+                if (slp.getSpanIndex() == 0) {
+                    outRect.set(mDrawable.getIntrinsicWidth(), 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+                } else {
+                    outRect.set(0, 0, mDrawable.getIntrinsicWidth(), mDrawable.getIntrinsicHeight());
+                }
             }
         }
     }
@@ -204,7 +207,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 }
             }
         } else if (parent.getLayoutManager() instanceof StaggeredGridLayoutManager) {
-            // TODO: 2016/7/26 位置错乱有很大问题
             int childCount = parent.getChildCount();
             for (int i = 0; i < childCount; i++) {
                 final View child = parent.getChildAt(i);
@@ -236,7 +238,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             c.clipRect(mClipBounds, Region.Op.UNION);
             c.translate(mRecyclerViewPaddingLeft + mHeaderLeftMargin, mPinnedHeaderOffset + mRecyclerViewPaddingTop + mHeaderTopMargin);
             mPinnedHeaderView.draw(c);
-
 
             c.restore();
         }
@@ -422,6 +423,14 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         }
     }
 
+    /**
+     * 适用于网格布局，用于判断是否是第一列
+     *
+     * @param parent
+     * @param pos
+     * @param spanCount
+     * @return
+     */
     private boolean isFirstColumn(RecyclerView parent, int pos, int spanCount) {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
@@ -430,8 +439,6 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                 // 找到头部位置减去包括头部位置之前的个数
                 return true;
             }
-        } else if (layoutManager instanceof StaggeredGridLayoutManager) {
-            // TODO: 2016/7/26 瀑布流复杂
         }
         return false;
     }

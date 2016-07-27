@@ -9,7 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -78,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
                 return 0;
             }
 
+            private SparseIntArray mRandomHeights;
+
             @Override
             public void bindData(RecyclerViewHolder holder, int viewType, final int position, final String item) {
                 switch (viewType) {
@@ -95,9 +97,23 @@ public class MainActivity extends AppCompatActivity {
                     case RecyclerAdapter.TYPE_DATA:
                         holder.itemView.setTag(position);
                         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
-                            final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-                            lp.height = dip2px(MainActivity.this, mRandom.nextInt(101) + 80);
+                            // 瀑布流布局记录随机高度，就不会导致Item由于高度变化乱跑，导致画分隔线出现问题
+                            // 随机高度, 模拟瀑布效果.
+
+                            if (mRandomHeights == null) {
+                                mRandomHeights = new SparseIntArray(getItemCount());
+                            }
+
+                            if (mRandomHeights.get(position) == 0) {
+                                mRandomHeights.put(position, (int) (200 + Math.random() * 100));
+                            }
+
+                            ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
+                            lp.height = mRandomHeights.get(position);
+                            holder.itemView.setLayoutParams(lp);
+
                         }
+
                         holder.setText(R.id.tv_pos, position + "");
                         Glide.with(MainActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
                         break;
