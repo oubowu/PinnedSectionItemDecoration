@@ -22,7 +22,6 @@ import com.oushangfeng.pinneddemo.entitiy.StockEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,7 +56,8 @@ public class StockActivity extends AppCompatActivity {
                     @Override
                     public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
                         switch (id) {
-                            case OnItemTouchListener.HEADER_ID:
+                            case R.id.fl:
+                                // case OnItemTouchListener.HEADER_ID:
                                 Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.iv_more:
@@ -68,9 +68,9 @@ public class StockActivity extends AppCompatActivity {
 
                 };
 
-                mRecyclerView.addItemDecoration(
-                        new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true).setClickIds(R.id.iv_more)
-                                .disableHeaderClick(false).setHeaderClickListener(clickAdapter).create());
+                // 点击优先级没有问题了
+                mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
+                        .setClickIds(R.id.iv_more, R.id.fl).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create());
 
                 mAdapter = new RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>>() {
                     @Override

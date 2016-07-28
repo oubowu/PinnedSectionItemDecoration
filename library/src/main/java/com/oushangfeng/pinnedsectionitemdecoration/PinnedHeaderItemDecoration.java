@@ -480,7 +480,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         }
 
         /**
-         * 设置标签监听
+         * 设置标签监听，若设置点击监听不为null，并且开启标签的点击监听，那么标签的点击回调返回的id为ItemTouchListener.HEADER_ID
          *
          * @param headerClickListener 监听，若不设置这个setClickIds无效
          * @return 构建者
