@@ -24,7 +24,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.1.0'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.1.1'
 ```
 
 RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)「[供参考的RecyclerAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)」
@@ -42,38 +42,16 @@ RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告�
     
     
 ```
-Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理
+Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理
 ```
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        // 如果是网格布局，这里处理标签的布局占满一行
-        final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
-            final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
-            final GridLayoutManager.SpanSizeLookup oldSizeLookup = gridLayoutManager.getSpanSizeLookup();
-            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    if (getItemViewType(position) == TYPE_SECTION) {
-                        return gridLayoutManager.getSpanCount();
-                    }
-                    if (oldSizeLookup != null) {
-                        return oldSizeLookup.getSpanSize(position);
-                    }
-                    return 1;
-                }
-            });
-        }
+        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, TYPE_SECTION);
     }
 
     @Override
     public void onViewAttachedToWindow(RecyclerViewHolder holder) {
-        // 如果是瀑布流布局，这里处理标签的布局占满一行
-        final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-        if (lp instanceof StaggeredGridLayoutManager.LayoutParams) {
-            final StaggeredGridLayoutManager.LayoutParams slp = (StaggeredGridLayoutManager.LayoutParams) lp;
-            slp.setFullSpan(getItemViewType(holder.getLayoutPosition()) == TYPE_SECTION);
-        }
+        FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_SECTION);
     }
 ```
 

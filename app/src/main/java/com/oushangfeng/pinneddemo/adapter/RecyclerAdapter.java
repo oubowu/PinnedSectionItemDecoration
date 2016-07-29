@@ -1,8 +1,6 @@
 package com.oushangfeng.pinneddemo.adapter;
 
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,12 +9,13 @@ import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
+import com.oushangfeng.pinnedsectionitemdecoration.utils.FullSpanUtil;
 
 import java.util.List;
 
 /**
  * Created by Oubowu on 2016/7/21 17:40.
- * <p>
+ * <p/>
  * 适配器
  */
 public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> implements PinnedHeaderNotifyer<T> {
@@ -30,34 +29,12 @@ public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extend
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        // 如果是网格布局，这里处理标签的布局占满一行
-        final RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
-            final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
-            final GridLayoutManager.SpanSizeLookup oldSizeLookup = gridLayoutManager.getSpanSizeLookup();
-            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    if (getItemViewType(position) == TYPE_SECTION) {
-                        return gridLayoutManager.getSpanCount();
-                    }
-                    if (oldSizeLookup != null) {
-                        return oldSizeLookup.getSpanSize(position);
-                    }
-                    return 1;
-                }
-            });
-        }
+        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, TYPE_SECTION);
     }
 
     @Override
     public void onViewAttachedToWindow(RecyclerViewHolder holder) {
-        // 如果是瀑布流布局，这里处理标签的布局占满一行
-        final ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
-        if (lp instanceof StaggeredGridLayoutManager.LayoutParams) {
-            final StaggeredGridLayoutManager.LayoutParams slp = (StaggeredGridLayoutManager.LayoutParams) lp;
-            slp.setFullSpan(getItemViewType(holder.getLayoutPosition()) == TYPE_SECTION);
-        }
+        FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_SECTION);
     }
 
     @Override

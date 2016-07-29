@@ -16,7 +16,7 @@ import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListene
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
-import com.oushangfeng.pinnedsectionitemdecoration.util.DividerHelper;
+import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
@@ -494,7 +494,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         }
 
         /**
-         * 通过传入包括标签和其内部的子控件的ID设置其对应的点击事件，<br>注意必须要按照布局View从最外层到底层的顺序传入ID，这样子我才能确定它们响应的优先级
+         * 通过传入包括标签和其内部的子控件的ID设置其对应的点击事件
          *
          * @param clickIds 标签或其内部的子控件的ID
          * @return 构建者

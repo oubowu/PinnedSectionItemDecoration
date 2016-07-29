@@ -1,4 +1,4 @@
-package com.oushangfeng.pinnedsectionitemdecoration.util;
+package com.oushangfeng.pinnedsectionitemdecoration.utils;
 
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;

@@ -1,5 +1,6 @@
 package com.oushangfeng.pinneddemo;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             if (mRandomHeights.get(position) == 0) {
-                                mRandomHeights.put(position, (int) (200 + Math.random() * 100));
+                                mRandomHeights.put(position, dip2px(MainActivity.this, (int) (100 + Math.random() * 100)));
                             }
 
                             ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
@@ -185,6 +186,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private int dip2px(Context context, float dpValue) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
     }
 
 }
