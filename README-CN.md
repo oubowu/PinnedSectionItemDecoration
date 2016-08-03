@@ -5,20 +5,17 @@
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签的单击、双击和长按事件
 - 支持标签内部子控件的单击、双击和长按事件
-- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 99-115行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
+- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 97-109行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
 
 ## 效果图
-- 不带分隔线<br>
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
 ![大标签网格布局](/pic/big_header_gridlayout.gif) 
 ![大标签瀑布流布局](/pic/big_header_staggeredgridlayout.gif) 
 ![小标签线性布局](/pic/small_header_linearlayout.gif) 
 ![股市Demo](/pic/stock_demo.gif) 
-- 带分隔线<br>
-![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
-![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
-![大标签瀑布流布局带分隔线](/pic/big_header_staggeredgrid_divider.png) 
-![小标签线性布局带分隔线](/pic/small_header_linear_divider.png) 
+
+## 扩展库
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。)
 
 ## 它能做什么？
 
@@ -27,48 +24,47 @@
 compile 'com.oushangfeng:PinnedSectionItemDecoration:1.1.1'
 ```
 
-RecyclerView的Adapter需要继承PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)「[供参考的RecyclerAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)」
+RecyclerView的Adapter需要实现PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)「[供参考的StockAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FStockAdapter.java)」
 ```
     @Override
     public boolean isPinnedHeaderType(int viewType) {
-        // TYPE_SECTION代表是粘性标签类型
-        return viewType == TYPE_SECTION;
+        return viewType == StockEntity.StockInfo.TYPE_HEADER;
     }
-    
+
     @Override
-    public T getPinnedHeaderInfo(int position) {
-        return mData == null ? null : mData.get(position).getData();
+    public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
+        return ((StockEntity.StockInfo) getData().get(position));
     }
-    
-    
 ```
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理
 ```
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, TYPE_SECTION);
+        super.onAttachedToRecyclerView(recyclerView);
+        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, StockEntity.StockInfo.TYPE_HEADER);
     }
 
     @Override
-    public void onViewAttachedToWindow(RecyclerViewHolder holder) {
-        FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_SECTION);
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_DATA);
     }
 ```
 
 实现大粘性标签RecyclerView只需要添加一个PinnedHeaderItemDecoration，由于参数太多，现在只支持使用创建者模式创建，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决
 往上滚动遮不住真正的标签「[供参考的StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java)」
 ``` 
-
      final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
 
          @Override
          public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
              switch (id) {
-                 case OnItemTouchListener.HEADER_ID:
-                     Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                 case R.id.fl:
+                     // case OnItemTouchListener.HEADER_ID:
+                     Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
                      break;
                  case R.id.iv_more:
-                     Toast.makeText(StockActivity.this, "点击了标签的更多按钮", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
                      break;
              }
          }
@@ -95,28 +91,26 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 实现小粘性标签稍微复杂点，比如这个是数据的布局A
 ```
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginBottom="2dp"
-              android:layout_marginLeft="2dp"
-              android:layout_marginRight="2dp"
-              android:background="#70E593">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="#70E593">
 
     <ImageView
         android:id="@+id/iv_animal"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         tools:src="@mipmap/panda0"/>
 
     <TextView
-        tools:text="1"
         android:id="@+id/tv_pos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
         android:textColor="#000000"
         android:textSize="18dp"
-        android:padding="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        tools:text="1"/>
 
 </FrameLayout>
 ```
@@ -124,14 +118,11 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 
 这个是带有小标签的布局B
 ```
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:paddingBottom="2dp"
-             android:paddingLeft="2dp"
-             android:paddingRight="2dp"
-             android:paddingTop="2dp">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/iv_animal"
@@ -140,14 +131,15 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
         android:background="#70E593"
         tools:src="@mipmap/panda0"/>
 
-    <TextView
-        android:id="@+id/tv_small_pinned_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iv_small_pinned_header"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="#5A5A5A"
         android:padding="8dp"
         android:textColor="#ffffff"
         android:textSize="18dp"
+        tools:src="@mipmap/panda0"
         tools:text="熊猫"/>
 
 </FrameLayout>
@@ -157,18 +149,18 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签RecyclerView只需要添加一个SmallPinnedHeaderItemDecoration，只支持使用创建者模式创建，注意标签不能设置marginTop，
 因为往上滚动遮不住真正的标签「[供参考的SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)」
 ```
-     OnHeaderClickAdapter<String> headerClickAdapter = new OnHeaderClickAdapter<String>() {
+    OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
 
-         @Override
-         public void onHeaderClick(int id, int position, String data) {
-             if (id == R.id.tv_small_pinned_header) {
-                 Toast.makeText(SecondActivity.this, "点击了标签: " + data, Toast.LENGTH_SHORT).show();
-             }
-         }
+        @Override
+        public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            if (id == R.id.iv_small_pinned_header) {
+                Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            }
+        }
      };
      mRecyclerView.addItemDecoration(
              // 构造方法需要传入小标签的ID
-             new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header)
+             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header)
              // 开启绘制分隔线，默认关闭
              .enableDivider(true)
              // 设置分隔线资源ID

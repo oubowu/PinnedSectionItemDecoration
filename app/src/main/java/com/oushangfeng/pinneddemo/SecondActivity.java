@@ -6,13 +6,14 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
-import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.oushangfeng.pinneddemo.adapter.BaseHeaderAdapter;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
-import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.SmallPinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
 
@@ -23,7 +24,7 @@ public class SecondActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
 
-    private RecyclerAdapter<String, PinnedHeaderEntity<String>> mAdapter;
+    private BaseHeaderAdapter<PinnedHeaderEntity<Integer>> mAdapter;
 
     private int[] mDogs = {R.mipmap.dog0, R.mipmap.dog1, R.mipmap.dog2, R.mipmap.dog3, R.mipmap.dog4, R.mipmap.dog5, R.mipmap.dog6, R.mipmap.dog7, R.mipmap.dog8};
     private int[] mCats = {R.mipmap.cat0, R.mipmap.cat1, R.mipmap.cat2, R.mipmap.cat3, R.mipmap.cat4, R.mipmap.cat5, R.mipmap.cat6, R.mipmap.cat7, R.mipmap.cat8};
@@ -40,83 +41,97 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
 
-        final List<PinnedHeaderEntity<String>> data = new ArrayList<>();
+        final List<PinnedHeaderEntity<Integer>> data = new ArrayList<>();
         int i = 0;
         for (int dog : mDogs) {
-            data.add(new PinnedHeaderEntity<>(dog + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "狗狗"));
+            data.add(new PinnedHeaderEntity<>(dog, i == 0 ? BaseHeaderAdapter.TYPE_HEADER : BaseHeaderAdapter.TYPE_DATA, "Dog"));
             i++;
         }
         i = 0;
         for (int cat : mCats) {
-            data.add(new PinnedHeaderEntity<>(cat + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "猫咪"));
+            data.add(new PinnedHeaderEntity<>(cat, i == 0 ? BaseHeaderAdapter.TYPE_HEADER : BaseHeaderAdapter.TYPE_DATA, "Cat"));
             i++;
         }
         i = 0;
         for (int rabbit : mRabbits) {
-            data.add(new PinnedHeaderEntity<>(rabbit + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "兔子"));
+            data.add(new PinnedHeaderEntity<>(rabbit, i == 0 ? BaseHeaderAdapter.TYPE_HEADER : BaseHeaderAdapter.TYPE_DATA, "Rabbit"));
             i++;
         }
         i = 0;
         for (int panda : mPandas) {
-            data.add(new PinnedHeaderEntity<>(panda + "", i == 0 ? RecyclerAdapter.TYPE_SECTION : RecyclerAdapter.TYPE_DATA, "熊猫"));
+            data.add(new PinnedHeaderEntity<>(panda, i == 0 ? BaseHeaderAdapter.TYPE_HEADER : BaseHeaderAdapter.TYPE_DATA, "Panda"));
             i++;
         }
 
-        mAdapter = new RecyclerAdapter<String, PinnedHeaderEntity<String>>() {
+        mAdapter = new BaseHeaderAdapter<PinnedHeaderEntity<Integer>>(data) {
+
             @Override
-            public int getItemLayoutId(int viewType) {
-                switch (viewType) {
-                    case RecyclerAdapter.TYPE_SECTION:
-                        return R.layout.item_data_with_small_pinned_header;
-                    case RecyclerAdapter.TYPE_DATA:
-                        return R.layout.item_data;
-                }
-                return 0;
+            protected void addItemTypes() {
+                addItemType(BaseHeaderAdapter.TYPE_HEADER, R.layout.item_data_with_small_pinned_header);
+                addItemType(BaseHeaderAdapter.TYPE_DATA, R.layout.item_data);
             }
 
             @Override
-            public void bindData(RecyclerViewHolder holder, int viewType, final int position, String item) {
-                switch (viewType) {
-                    case RecyclerAdapter.TYPE_SECTION:
-                        Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.tv_small_pinned_header));
-                        Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
+            protected void convert(BaseViewHolder holder, PinnedHeaderEntity<Integer> item) {
+                switch (holder.getItemViewType()) {
+                    case BaseHeaderAdapter.TYPE_HEADER:
+                        Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_small_pinned_header));
+                        Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
+
+                        holder.setOnClickListener(R.id.iv_small_pinned_header, new OnItemChildClickListener());
+                        holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+
                         break;
-                    case RecyclerAdapter.TYPE_DATA:
-                        holder.setText(R.id.tv_pos, position + "");
-                        Glide.with(SecondActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
+                    case BaseHeaderAdapter.TYPE_DATA:
+                        holder.setText(R.id.tv_pos, holder.getLayoutPosition() + "");
+                        Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
+
+                        holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+
                         break;
                 }
             }
 
             @Override
-            public String getPinnedHeaderInfo(int position) {
-                // 小标签的话数据为PinnedHeaderName，所以这里重写一下
-                return getData().get(position).getPinnedHeaderName();
+            public boolean isPinnedHeaderType(int viewType) {
+                return viewType == BaseHeaderAdapter.TYPE_HEADER;
+            }
+
+            @Override
+            public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
+                return (PinnedHeaderEntity<Integer>) getData().get(position);
             }
         };
-        mAdapter.setItemClickListener(new OnItemClickListener<String>() {
+
+        mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
             @Override
-            public void onItemClick(View view, String data, int position) {
-                Toast.makeText(SecondActivity.this, "图片Id是：" + data, Toast.LENGTH_SHORT).show();
+            public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getItem(i);
+                switch (view.getId()) {
+                    case R.id.iv_small_pinned_header:
+                        Toast.makeText(SecondActivity.this, "click tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.iv_animal:
+                        Toast.makeText(SecondActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
             }
         });
-        mAdapter.setData(data);
-
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false));
-        OnHeaderClickAdapter<String> headerClickAdapter = new OnHeaderClickAdapter<String>() {
+        OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
 
             @Override
-            public void onHeaderClick(int id, int position, String data) {
-                if (id == R.id.tv_small_pinned_header) {
-                    Toast.makeText(SecondActivity.this, "点击了标签: " + data, Toast.LENGTH_SHORT).show();
+            public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+                if (id == R.id.iv_small_pinned_header) {
+                    Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                 }
             }
         };
         mRecyclerView.addItemDecoration(
-                new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
-                        .disableHeaderClick(true).setClickIds(R.id.tv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
+                new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.iv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
+                        .disableHeaderClick(true).setClickIds(R.id.iv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
         mRecyclerView.setAdapter(mAdapter);
 
     }

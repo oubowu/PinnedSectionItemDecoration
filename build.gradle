@@ -19,6 +19,7 @@ allprojects {
     repositories {
         jcenter{
             url "http://jcenter.bintray.com/"
+            maven { url "https://jitpack.io" }
         }
     }
     tasks.withType(Javadoc) {

@@ -14,13 +14,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
-import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.oushangfeng.pinneddemo.adapter.BaseHeaderAdapter;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
-import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 
@@ -31,7 +32,8 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private RecyclerAdapter<String, PinnedHeaderEntity<String>> mAdapter;
+
+    private BaseHeaderAdapter<PinnedHeaderEntity<Integer>> mAdapter;
 
     private int[] mDogs = {R.mipmap.dog0, R.mipmap.dog1, R.mipmap.dog2, R.mipmap.dog3, R.mipmap.dog4, R.mipmap.dog5, R.mipmap.dog6, R.mipmap.dog7, R.mipmap.dog8};
     private int[] mCats = {R.mipmap.cat0, R.mipmap.cat1, R.mipmap.cat2, R.mipmap.cat3, R.mipmap.cat4, R.mipmap.cat5, R.mipmap.cat6, R.mipmap.cat7, R.mipmap.cat8};
@@ -48,57 +50,49 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("BigPinnedHeader");
 
-        List<PinnedHeaderEntity<String>> data = new ArrayList<>();
-        data.add(new PinnedHeaderEntity<>("狗狗", RecyclerAdapter.TYPE_SECTION, "狗狗"));
+        List<PinnedHeaderEntity<Integer>> data = new ArrayList<>();
+        data.add(new PinnedHeaderEntity<>(0, BaseHeaderAdapter.TYPE_HEADER, "Dog"));
         for (int dog : mDogs) {
-            data.add(new PinnedHeaderEntity<>(dog + "", RecyclerAdapter.TYPE_DATA, "狗狗"));
+            data.add(new PinnedHeaderEntity<>(dog, BaseHeaderAdapter.TYPE_DATA, "Dog"));
         }
-        data.add(new PinnedHeaderEntity<>("猫咪", RecyclerAdapter.TYPE_SECTION, "猫咪"));
+        data.add(new PinnedHeaderEntity<>(0, BaseHeaderAdapter.TYPE_HEADER, "Cat"));
         for (int cat : mCats) {
-            data.add(new PinnedHeaderEntity<>(cat + "", RecyclerAdapter.TYPE_DATA, "猫咪"));
+            data.add(new PinnedHeaderEntity<>(cat, BaseHeaderAdapter.TYPE_DATA, "Cat"));
         }
-        data.add(new PinnedHeaderEntity<>("兔子", RecyclerAdapter.TYPE_SECTION, "兔子"));
+        data.add(new PinnedHeaderEntity<>(0, BaseHeaderAdapter.TYPE_HEADER, "Rabbit"));
         for (int rabbit : mRabbits) {
-            data.add(new PinnedHeaderEntity<>(rabbit + "", RecyclerAdapter.TYPE_DATA, "兔子"));
+            data.add(new PinnedHeaderEntity<>(rabbit, BaseHeaderAdapter.TYPE_DATA, "Rabbit"));
         }
-        data.add(new PinnedHeaderEntity<>("熊猫", RecyclerAdapter.TYPE_SECTION, "熊猫"));
+        data.add(new PinnedHeaderEntity<>(0, BaseHeaderAdapter.TYPE_HEADER, "Panda"));
         for (int panda : mPandas) {
-            data.add(new PinnedHeaderEntity<>(panda + "", RecyclerAdapter.TYPE_DATA, "熊猫"));
+            data.add(new PinnedHeaderEntity<>(panda, BaseHeaderAdapter.TYPE_DATA, "Panda"));
         }
 
-        mAdapter = new RecyclerAdapter<String, PinnedHeaderEntity<String>>() {
-            @Override
-            public int getItemLayoutId(int viewType) {
-                switch (viewType) {
-                    case RecyclerAdapter.TYPE_SECTION:
-                        return R.layout.item_pinned_header;
-                    case RecyclerAdapter.TYPE_DATA:
-                        return R.layout.item_data;
-                }
-                return 0;
-            }
+        mAdapter = new BaseHeaderAdapter<PinnedHeaderEntity<Integer>>(data) {
 
             private SparseIntArray mRandomHeights;
 
             @Override
-            public void bindData(RecyclerViewHolder holder, int viewType, final int position, final String item) {
-                switch (viewType) {
-                    case RecyclerAdapter.TYPE_SECTION:
-                        holder.itemView.setTag(position);
-                        holder.setText(R.id.tv_animal, item);
-                        holder.setOnClickListener(R.id.tv_animal, new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                // 标签点击事件
-                                Toast.makeText(MainActivity.this, "标签是：" + item, Toast.LENGTH_SHORT).show();
-                            }
-                        });
+            protected void addItemTypes() {
+                addItemType(BaseHeaderAdapter.TYPE_HEADER, R.layout.item_pinned_header);
+                addItemType(BaseHeaderAdapter.TYPE_DATA, R.layout.item_data);
+            }
+
+            @Override
+            protected void convert(BaseViewHolder holder, PinnedHeaderEntity<Integer> item) {
+                switch (holder.getItemViewType()) {
+                    case BaseHeaderAdapter.TYPE_HEADER:
+                        holder.setText(R.id.tv_animal, item.getPinnedHeaderName());
+                        holder.setOnClickListener(R.id.tv_animal, new OnItemChildClickListener());
                         break;
-                    case RecyclerAdapter.TYPE_DATA:
-                        holder.itemView.setTag(position);
+                    case BaseHeaderAdapter.TYPE_DATA:
+
+                        int position = holder.getLayoutPosition();
+
                         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
                             // 瀑布流布局记录随机高度，就不会导致Item由于高度变化乱跑，导致画分隔线出现问题
                             // 随机高度, 模拟瀑布效果.
+
 
                             if (mRandomHeights == null) {
                                 mRandomHeights = new SparseIntArray(getItemCount());
@@ -115,41 +109,58 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         holder.setText(R.id.tv_pos, position + "");
-                        Glide.with(MainActivity.this).load(Integer.parseInt(item)).into(holder.getImageView(R.id.iv_animal));
+                        Glide.with(MainActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
                         break;
                 }
             }
-        };
-        mAdapter.setItemClickListener(new OnItemClickListener<String>() {
+
             @Override
-            public void onItemClick(View view, String data, int position) {
-                Toast.makeText(MainActivity.this, "图片Id是：" + data, Toast.LENGTH_SHORT).show();
+            public boolean isPinnedHeaderType(int viewType) {
+                return viewType == BaseHeaderAdapter.TYPE_HEADER;
+            }
+
+            @Override
+            public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
+                return (PinnedHeaderEntity<Integer>) getData().get(position);
+            }
+        };
+
+        mAdapter.setOnRecyclerViewItemClickListener(new BaseQuickAdapter.OnRecyclerViewItemClickListener() {
+            @Override
+            public void onItemClick(View view, int i) {
+                final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
+                Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
             }
         });
-        mAdapter.setData(data);
 
+        mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
+            @Override
+            public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
+                Toast.makeText(MainActivity.this, "click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            }
+        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        OnHeaderClickListener<String> headerClickListener = new OnHeaderClickListener<String>() {
+        OnHeaderClickListener<PinnedHeaderEntity<Integer>> headerClickListener = new OnHeaderClickListener<PinnedHeaderEntity<Integer>>() {
             @Override
-            public void onHeaderClick(int id, int position, String data) {
-                Toast.makeText(MainActivity.this, "单击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+                Toast.makeText(MainActivity.this, "click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(int id, int position, String data) {
-                Toast.makeText(MainActivity.this, "长按，标签是：" + data, Toast.LENGTH_SHORT).show();
+            public void onHeaderLongClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+                Toast.makeText(MainActivity.this, "long click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(int id, int position, String data) {
-                Toast.makeText(MainActivity.this, "双击，标签是：" + data, Toast.LENGTH_SHORT).show();
+            public void onHeaderDoubleClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+                Toast.makeText(MainActivity.this, "double click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
         };
-        mRecyclerView.addItemDecoration(
-                new PinnedHeaderItemDecoration.Builder<String>().setDividerId(R.drawable.divider).enableDivider(true).setHeaderClickListener(headerClickListener)
-                        .create());
+        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>().setDividerId(R.drawable.divider).enableDivider(true)
+                .setHeaderClickListener(headerClickListener).create());
         mRecyclerView.setAdapter(mAdapter);
     }
 

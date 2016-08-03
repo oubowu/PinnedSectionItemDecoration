@@ -17,13 +17,14 @@
         tools:src="@mipmap/panda0"/>
 
     <ImageView
-        android:id="@+id/tv_small_pinned_header"
+        android:id="@+id/iv_small_pinned_header"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:background="#5A5A5A"
         android:padding="8dp"
         android:textColor="#ffffff"
         android:textSize="18dp"
+        tools:src="@mipmap/panda0"
         tools:text="熊猫"/>
 
 </FrameLayout>

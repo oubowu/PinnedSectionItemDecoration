@@ -11,7 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.oushangfeng.pinneddemo.adapter.MultipleItemQuickAdapter;
+import com.oushangfeng.pinneddemo.adapter.StockAdapter;
 import com.oushangfeng.pinneddemo.entitiy.StockEntity;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
@@ -26,9 +26,7 @@ import java.util.List;
 public class StockActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    //    private RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>> mAdapter;
-
-    private MultipleItemQuickAdapter mAdapter;
+    private StockAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +51,10 @@ public class StockActivity extends AppCompatActivity {
                         switch (id) {
                             case R.id.fl:
                                 // case OnItemTouchListener.HEADER_ID:
-                                // Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-                                Toast.makeText(StockActivity.this, "点击了标签: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.iv_more:
-                                Toast.makeText(StockActivity.this, "点击了" + data.pinnedHeaderName + "标签的更多按钮", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
@@ -66,43 +63,6 @@ public class StockActivity extends AppCompatActivity {
 
                 mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
                         .setClickIds(R.id.iv_more, R.id.fl).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create());
-
-                /*mAdapter = new RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>>() {
-                    @Override
-                    public int getItemLayoutId(int viewType) {
-                        switch (viewType) {
-                            case RecyclerAdapter.TYPE_SECTION:
-                                return R.layout.item_stock_header;
-                            case RecyclerAdapter.TYPE_DATA:
-                                return R.layout.item_stock_data;
-                        }
-                        return 0;
-                    }
-
-                    @Override
-                    public void bindData(RecyclerViewHolder holder, int viewType, int position, StockEntity.StockInfo item) {
-                        switch (viewType) {
-                            case RecyclerAdapter.TYPE_SECTION:
-                                holder.setText(R.id.tv_stock_name, getData().get(position).getPinnedHeaderName());
-                                break;
-                            case RecyclerAdapter.TYPE_DATA:
-
-                                final String stockNameAndCode = item.stock_name + "\n" + item.stock_code;
-                                SpannableStringBuilder ssb = new SpannableStringBuilder(stockNameAndCode);
-                                ssb.setSpan(new ForegroundColorSpan(Color.parseColor("#a4a4a7")), item.stock_name.length(), stockNameAndCode.length(),
-                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                ssb.setSpan(new AbsoluteSizeSpan(dip2px(holder.itemView.getContext(), 13)), item.stock_name.length(), stockNameAndCode.length(),
-                                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                                holder.setText(R.id.tv_stock_name_code, ssb);
-
-                                holder.setText(R.id.tv_current_price, item.current_price);
-                                holder.setText(R.id.tv_rate, (item.rate < 0 ? String.format("%.2f", item.rate) : "+" + String.format("%.2f", item.rate)) + "%");
-                                break;
-                        }
-                    }
-                };
-
-                mRecyclerView.setAdapter(mAdapter);*/
 
             }
 
@@ -115,31 +75,8 @@ public class StockActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
 
                 Gson gson = new Gson();
+                
                 final StockEntity stockEntity = gson.fromJson(result, StockEntity.class);
-
-                /*List<PinnedHeaderEntity<StockEntity.StockInfo>> data = new ArrayList<>();
-
-                data.add(new PinnedHeaderEntity<StockEntity.StockInfo>(null, RecyclerAdapter.TYPE_SECTION, "涨幅榜"));
-                for (StockEntity.StockInfo info : stockEntity.increase_list) {
-                    data.add(new PinnedHeaderEntity<>(info, RecyclerAdapter.TYPE_DATA, "涨幅榜"));
-                }
-
-                data.add(new PinnedHeaderEntity<StockEntity.StockInfo>(null, RecyclerAdapter.TYPE_SECTION, "跌幅榜"));
-                for (StockEntity.StockInfo info : stockEntity.down_list) {
-                    data.add(new PinnedHeaderEntity<>(info, RecyclerAdapter.TYPE_DATA, "跌幅榜"));
-                }
-
-                data.add(new PinnedHeaderEntity<StockEntity.StockInfo>(null, RecyclerAdapter.TYPE_SECTION, "换手率"));
-                for (StockEntity.StockInfo info : stockEntity.change_list) {
-                    data.add(new PinnedHeaderEntity<>(info, RecyclerAdapter.TYPE_DATA, "换手率"));
-                }
-
-                data.add(new PinnedHeaderEntity<StockEntity.StockInfo>(null, RecyclerAdapter.TYPE_SECTION, "振幅榜"));
-                for (StockEntity.StockInfo info : stockEntity.amplitude_list) {
-                    data.add(new PinnedHeaderEntity<>(info, RecyclerAdapter.TYPE_DATA, "振幅榜"));
-                }
-
-                mAdapter.setData(data);*/
 
                 List<StockEntity.StockInfo> data = new ArrayList<>();
 
@@ -167,7 +104,7 @@ public class StockActivity extends AppCompatActivity {
                     data.add(info);
                 }
 
-                mAdapter = new MultipleItemQuickAdapter(data);
+                mAdapter = new StockAdapter(data);
                 mRecyclerView.setAdapter(mAdapter);
 
             }

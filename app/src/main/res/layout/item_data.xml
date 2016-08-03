@@ -9,6 +9,7 @@
         android:layout_marginRight="2dp"-->
     <ImageView
         android:id="@+id/iv_animal"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         tools:src="@mipmap/panda0"/>

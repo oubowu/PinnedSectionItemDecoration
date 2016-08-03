@@ -18,6 +18,7 @@ import java.util.List;
  * <p/>
  * 适配器
  */
+@Deprecated
 public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> implements PinnedHeaderNotifyer<T> {
 
     public final static int TYPE_DATA = 1;
@@ -65,7 +66,7 @@ public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extend
 
     @Override
     public int getItemViewType(int position) {
-        return mData.get(position).getType();
+        return mData.get(position).getItemType();
     }
 
     @Override

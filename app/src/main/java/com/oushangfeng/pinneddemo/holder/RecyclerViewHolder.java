@@ -28,6 +28,7 @@ import android.widget.TextView;
  * UpdateUser:<p>
  * UpdateDate:<p>
  */
+@Deprecated
 public class RecyclerViewHolder extends RecyclerView.ViewHolder {
 
     protected SparseArray<View> mViews;

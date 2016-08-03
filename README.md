@@ -5,20 +5,17 @@ A powerful pinned section header library. The realization of ideas comes from「
 - Small pinned section header support vertical orientation of the LinearLayoutManager and GridLayoutManager which its span count is 1.
 - Support the header of the click, double click and long press event.
 - Support the child view of the click, double click and long press event.
-- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 99-115 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
+- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 97-109 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
 
 ## Screenshot
-- Without separator line<br>
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
 ![大标签网格布局](/pic/big_header_gridlayout.gif) 
 ![大标签瀑布流布局](/pic/big_header_staggeredgridlayout.gif) 
 ![小标签线性布局](/pic/small_header_linearlayout.gif) 
 ![股市Demo](/pic/stock_demo.gif) 
-- With separator line<br>
-![大标签线性布局带分隔线](/pic/big_header_linear_divider.png) 
-![大标签网格布局带分隔线](/pic/big_header_grid_divider.png) 
-![大标签瀑布流布局带分隔线](/pic/big_header_staggeredgrid_divider.png) 
-![小标签线性布局带分隔线](/pic/small_header_linear_divider.png) 
+
+## Extension library
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(It is highly recommended to use this adapter, which can greatly reduce the amount of work.)
 
 ## How to use?
 
@@ -27,47 +24,46 @@ To add a dependency using Gradle:
 compile 'com.oushangfeng:PinnedSectionItemDecoration:1.1.1'
 ```
 
-Adapter needs to implement the PinnedHeaderNotifyer interface then tells ItemDecoration which type is the pinned section header and the information of the pinned section header.「[See RecyclerAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FRecyclerAdapter.java)」
+Adapter needs to implement the PinnedHeaderNotifyer interface then tells ItemDecoration which type is the pinned section header and the information of the pinned section header.「[See StockAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FStockAdapter.java)」
 ```
     @Override
     public boolean isPinnedHeaderType(int viewType) {
-        // TYPE_SECTION represents the type of pinned section header.
-        return viewType == TYPE_SECTION;
+        return viewType == StockEntity.StockInfo.TYPE_HEADER;
     }
-    
+
     @Override
-    public T getPinnedHeaderInfo(int position) {
-        return mData == null ? null : mData.get(position).getData();
+    public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
+        return ((StockEntity.StockInfo) getData().get(position));
     }
-    
-    
 ```
 Adapter needs to process the span count of header through the FullSpanUtil.
 ```
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, TYPE_SECTION);
+        super.onAttachedToRecyclerView(recyclerView);
+        FullSpanUtil.onAttachedToRecyclerView(recyclerView, this, StockEntity.StockInfo.TYPE_HEADER);
     }
 
     @Override
-    public void onViewAttachedToWindow(RecyclerViewHolder holder) {
-        FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_SECTION);
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_DATA);
     }
 ```
 
 To achieve large pinned section header, RecyclerView only need to add a PinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java)」
 ``` 
-
      final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
 
          @Override
          public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
              switch (id) {
-                 case OnItemTouchListener.HEADER_ID:
-                     Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                 case R.id.fl:
+                     // case OnItemTouchListener.HEADER_ID:
+                     Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
                      break;
                  case R.id.iv_more:
-                     Toast.makeText(StockActivity.this, "点击了标签的更多按钮", Toast.LENGTH_SHORT).show();
+                     Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
                      break;
              }
          }
@@ -94,28 +90,26 @@ To achieve large pinned section header, RecyclerView only need to add a PinnedHe
 To achieve small pinned section header is a little bit more complex, such as the layout A of the data .
 ```
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:layout_marginBottom="2dp"
-              android:layout_marginLeft="2dp"
-              android:layout_marginRight="2dp"
-              android:background="#70E593">
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:background="#70E593">
 
     <ImageView
         android:id="@+id/iv_animal"
+        android:layout_gravity="center"
         android:layout_width="match_parent"
         android:layout_height="120dp"
         tools:src="@mipmap/panda0"/>
 
     <TextView
-        tools:text="1"
         android:id="@+id/tv_pos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="8dp"
         android:textColor="#000000"
         android:textSize="18dp"
-        android:padding="8dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        tools:text="1"/>
 
 </FrameLayout>
 ```
@@ -123,14 +117,11 @@ To achieve small pinned section header is a little bit more complex, such as the
 
 This is a layout B with a small pinned section header.
 ```
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content"
-             android:paddingBottom="2dp"
-             android:paddingLeft="2dp"
-             android:paddingRight="2dp"
-             android:paddingTop="2dp">
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/iv_animal"
@@ -139,14 +130,15 @@ This is a layout B with a small pinned section header.
         android:background="#70E593"
         tools:src="@mipmap/panda0"/>
 
-    <TextView
-        android:id="@+id/tv_small_pinned_header"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/iv_small_pinned_header"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:background="#5A5A5A"
         android:padding="8dp"
         android:textColor="#ffffff"
         android:textSize="18dp"
+        tools:src="@mipmap/panda0"
         tools:text="熊猫"/>
 
 </FrameLayout>
@@ -155,18 +147,18 @@ This is a layout B with a small pinned section header.
 
 The layout B add a header compare whit layout A，then RecyclerView only need to add a SmallPinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)」
 ```
-     OnHeaderClickAdapter<String> headerClickAdapter = new OnHeaderClickAdapter<String>() {
+    OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
 
-         @Override
-         public void onHeaderClick(int id, int position, String data) {
-             if (id == R.id.tv_small_pinned_header) {
-                 Toast.makeText(SecondActivity.this, "点击了标签: " + data, Toast.LENGTH_SHORT).show();
-             }
-         }
+        @Override
+        public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            if (id == R.id.iv_small_pinned_header) {
+                Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            }
+        }
      };
      mRecyclerView.addItemDecoration(
              // Constructor need to set the id of header.
-             new SmallPinnedHeaderItemDecoration.Builder<String>(R.id.tv_small_pinned_header)
+             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header)
              // Enable draw the separator line, by default it's disable.
              .enableDivider(true)
              // Set separator line resources id.
