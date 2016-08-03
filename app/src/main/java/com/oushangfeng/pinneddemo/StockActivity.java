@@ -2,24 +2,17 @@ package com.oushangfeng.pinneddemo;
 
 import android.content.Context;
 import android.content.res.AssetManager;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.oushangfeng.pinneddemo.adapter.RecyclerAdapter;
-import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
+import com.oushangfeng.pinneddemo.adapter.MultipleItemQuickAdapter;
 import com.oushangfeng.pinneddemo.entitiy.StockEntity;
-import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickAdapter;
 
@@ -33,7 +26,9 @@ import java.util.List;
 public class StockActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
-    private RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>> mAdapter;
+    //    private RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>> mAdapter;
+
+    private MultipleItemQuickAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +53,21 @@ public class StockActivity extends AppCompatActivity {
                         switch (id) {
                             case R.id.fl:
                                 // case OnItemTouchListener.HEADER_ID:
-                                Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                                // Toast.makeText(StockActivity.this, "点击了标签: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "点击了标签: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.iv_more:
-                                Toast.makeText(StockActivity.this, "点击了标签的更多按钮", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "点击了" + data.pinnedHeaderName + "标签的更多按钮", Toast.LENGTH_SHORT).show();
                                 break;
                         }
                     }
 
                 };
 
-                // 点击优先级没有问题了
                 mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
                         .setClickIds(R.id.iv_more, R.id.fl).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create());
 
-                mAdapter = new RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>>() {
+                /*mAdapter = new RecyclerAdapter<StockEntity.StockInfo, PinnedHeaderEntity<StockEntity.StockInfo>>() {
                     @Override
                     public int getItemLayoutId(int viewType) {
                         switch (viewType) {
@@ -107,7 +102,7 @@ public class StockActivity extends AppCompatActivity {
                     }
                 };
 
-                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setAdapter(mAdapter);*/
 
             }
 
@@ -122,7 +117,7 @@ public class StockActivity extends AppCompatActivity {
                 Gson gson = new Gson();
                 final StockEntity stockEntity = gson.fromJson(result, StockEntity.class);
 
-                List<PinnedHeaderEntity<StockEntity.StockInfo>> data = new ArrayList<>();
+                /*List<PinnedHeaderEntity<StockEntity.StockInfo>> data = new ArrayList<>();
 
                 data.add(new PinnedHeaderEntity<StockEntity.StockInfo>(null, RecyclerAdapter.TYPE_SECTION, "涨幅榜"));
                 for (StockEntity.StockInfo info : stockEntity.increase_list) {
@@ -144,7 +139,37 @@ public class StockActivity extends AppCompatActivity {
                     data.add(new PinnedHeaderEntity<>(info, RecyclerAdapter.TYPE_DATA, "振幅榜"));
                 }
 
-                mAdapter.setData(data);
+                mAdapter.setData(data);*/
+
+                List<StockEntity.StockInfo> data = new ArrayList<>();
+
+                data.add(new StockEntity.StockInfo(StockEntity.StockInfo.TYPE_HEADER, "涨幅榜"));
+                for (StockEntity.StockInfo info : stockEntity.increase_list) {
+                    info.setItemType(StockEntity.StockInfo.TYPE_DATA);
+                    data.add(info);
+                }
+
+                data.add(new StockEntity.StockInfo(StockEntity.StockInfo.TYPE_HEADER, "跌幅榜"));
+                for (StockEntity.StockInfo info : stockEntity.down_list) {
+                    info.setItemType(StockEntity.StockInfo.TYPE_DATA);
+                    data.add(info);
+                }
+
+                data.add(new StockEntity.StockInfo(StockEntity.StockInfo.TYPE_HEADER, "换手率"));
+                for (StockEntity.StockInfo info : stockEntity.change_list) {
+                    info.setItemType(StockEntity.StockInfo.TYPE_DATA);
+                    data.add(info);
+                }
+
+                data.add(new StockEntity.StockInfo(StockEntity.StockInfo.TYPE_HEADER, "振幅榜"));
+                for (StockEntity.StockInfo info : stockEntity.amplitude_list) {
+                    info.setItemType(StockEntity.StockInfo.TYPE_DATA);
+                    data.add(info);
+                }
+
+                mAdapter = new MultipleItemQuickAdapter(data);
+                mRecyclerView.setAdapter(mAdapter);
+
             }
 
         }.execute();
@@ -176,7 +201,7 @@ public class StockActivity extends AppCompatActivity {
 
     }
 
-    private int dip2px(Context context, float dpValue) {
+    public static int dip2px(Context context, float dpValue) {
         final float scale = context.getResources().getDisplayMetrics().density;
         return (int) (dpValue * scale + 0.5f);
     }

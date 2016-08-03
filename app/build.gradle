@@ -28,4 +28,5 @@ dependencies {
     compile 'com.android.support:support-v4:24.1.1'
     compile project(':library')
     compile 'com.google.code.gson:gson:2.4'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v1.9.7'
 }
