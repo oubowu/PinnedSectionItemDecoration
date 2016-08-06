@@ -38,7 +38,7 @@ public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInf
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_DATA);
+        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_HEADER);
     }
 
     @Override
