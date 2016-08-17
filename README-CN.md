@@ -18,7 +18,7 @@
 [BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。)
 
 ## 注意
-报 Gradle 'PinnedSectionItemDecoration-master' project refresh failed，Error:Cannot invoke method contains() on null object的童鞋把library文件夹下的build.gradle分库语句去掉即可
+报 Gradle 'PinnedSectionItemDecoration-master' project refresh failed，Error:Cannot invoke method contains() on null object的童鞋把library文件夹下的build.gradle发库语句去掉即可
 
 ## 它能做什么？
 
