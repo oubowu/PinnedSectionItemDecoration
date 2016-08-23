@@ -7,6 +7,7 @@ import android.view.View;
  * <p>
  * 点击监听
  */
+@Deprecated
 public interface OnItemClickListener<T> {
 
     void onItemClick(View view, T data, int position);
