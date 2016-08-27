@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -132,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(View view, int i) {
                 final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
                 Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
-                mItemDecoration.fixHeader(!mItemDecoration.isFixHeader());
             }
         });
 
@@ -166,6 +166,11 @@ public class MainActivity extends AppCompatActivity {
                 .setHeaderClickListener(headerClickListener).fixHeader(true).create();
         mRecyclerView.addItemDecoration(mItemDecoration);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    public void fixHeader(View view) {
+        mItemDecoration.fixHeader(!mItemDecoration.isFixHeader());
+        ((Button) view).setText(mItemDecoration.isFixHeader() ? "Don't fix header" : "Fix header");
     }
 
     @Override

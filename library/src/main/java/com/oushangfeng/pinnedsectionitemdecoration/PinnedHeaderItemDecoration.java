@@ -152,7 +152,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
 
-        if (mPinnedHeaderView != null && !mFixHeader) {
+        if (mPinnedHeaderView != null && mFixHeader) {
 
             mClipBounds = c.getClipBounds();
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
@@ -235,7 +235,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
-        if (mPinnedHeaderView != null && !mFixHeader) {
+        if (mPinnedHeaderView != null && mFixHeader) {
             c.save();
 
             mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
@@ -282,7 +282,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             return;
         }
 
-        if (mFixHeader) {
+        if (!mFixHeader) {
             return;
         }
 
@@ -499,7 +499,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
         private boolean disableHeaderClick;
 
-        private boolean fixHeader;
+        private boolean fixHeader = true;
 
         public Builder() {
         }
