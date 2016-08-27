@@ -20,11 +20,11 @@ import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
- * <p>
+ * <p/>
  * 这个是单独一个布局的标签
- * <p>
+ * <p/>
  * porting from https://github.com/takahr/pinned-section-item-decoration
- * <p>
+ * <p/>
  * 注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签;marginBottom还有问题待解决
  */
 public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
@@ -34,6 +34,8 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private boolean mEnableDivider;
 
     private boolean mDisableHeaderClick;
+
+    private boolean mFixHeader;
 
     private int mDividerId;
 
@@ -72,10 +74,23 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mRight;
     private int mBottom;
 
+    private RecyclerView mParent;
+
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
     // 3.getItemOffsets 可以通过outRect.set()为每个Item设置一定的偏移量，主要用于绘制Decorator。
+
+    public boolean isFixHeader() {
+        return mFixHeader;
+    }
+
+    public void fixHeader(boolean fixHeader) {
+        mFixHeader = fixHeader;
+        if (mParent != null) {
+            mParent.scrollBy(0, 1);
+        }
+    }
 
     private PinnedHeaderItemDecoration(Builder<T> builder) {
         mEnableDivider = builder.enableDivider;
@@ -83,6 +98,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         mDividerId = builder.dividerId;
         mClickIds = builder.clickIds;
         mDisableHeaderClick = builder.disableHeaderClick;
+        mFixHeader = builder.fixHeader;
     }
 
     @Override
@@ -136,7 +152,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null && !mFixHeader) {
 
             mClipBounds = c.getClipBounds();
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
@@ -219,7 +235,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null && !mFixHeader) {
             c.save();
 
             mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
@@ -263,6 +279,10 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
         if (mAdapter == null) {
             // checkCache的话RecyclerView未设置之前mAdapter为空
+            return;
+        }
+
+        if (mFixHeader) {
             return;
         }
 
@@ -418,6 +438,9 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      * @param parent
      */
     private void checkCache(final RecyclerView parent) {
+        if (mParent != parent) {
+            mParent = parent;
+        }
         final RecyclerView.Adapter adapter = parent.getAdapter();
         if (mAdapter != adapter) {
             // 适配器为null或者不同，清空缓存
@@ -474,7 +497,9 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
         private int[] clickIds;
 
-        public boolean disableHeaderClick;
+        private boolean disableHeaderClick;
+
+        private boolean fixHeader;
 
         public Builder() {
         }
@@ -531,6 +556,11 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          */
         public Builder<T> disableHeaderClick(boolean disableHeaderClick) {
             this.disableHeaderClick = disableHeaderClick;
+            return this;
+        }
+
+        public Builder<T> fixHeader(boolean fixHeader) {
+            this.fixHeader = fixHeader;
             return this;
         }
 

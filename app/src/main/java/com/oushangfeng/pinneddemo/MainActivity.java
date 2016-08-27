@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Random mRandom = new Random();
 
+    private PinnedHeaderItemDecoration<PinnedHeaderEntity<Integer>> mItemDecoration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +132,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemClick(View view, int i) {
                 final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
                 Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                mItemDecoration.fixHeader(!mItemDecoration.isFixHeader());
             }
         });
 
@@ -159,8 +162,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "double click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
         };
-        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>().setDividerId(R.drawable.divider).enableDivider(true)
-                .setHeaderClickListener(headerClickListener).create());
+        mItemDecoration = new PinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>().setDividerId(R.drawable.divider).enableDivider(true)
+                .setHeaderClickListener(headerClickListener).fixHeader(true).create();
+        mRecyclerView.addItemDecoration(mItemDecoration);
         mRecyclerView.setAdapter(mAdapter);
     }
 

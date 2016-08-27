@@ -2,6 +2,7 @@ package com.oushangfeng.pinnedsectionitemdecoration.callback;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -10,7 +11,7 @@ import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 
 /**
  * Created by Oubowu on 2016/7/24 20:51.
- * <p>
+ * <p/>
  * 用来处理标签的点击事件，现在仅仅支持单击，将来也许会实现长按和双击事件
  */
 public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener {
@@ -74,6 +75,16 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
         // 这里处理触摸事件来决定是否自己处理事件
         mGestureDetector.setIsLongpressEnabled(true);
         mGestureDetector.onTouchEvent(event);
+        // Log.e("TAG", "OnItemTouchListener-77行-onInterceptTouchEvent(): " + mIntercept);
+
+        if (event.getAction() == MotionEvent.ACTION_UP && !mIntercept) {
+            // 针对在头部滑动然后抬起手指的情况，如果在头部范围内需要拦截
+            float downX = event.getX();
+            float downY = event.getY();
+            final ClickBounds bounds = mBoundsArray.valueAt(0);
+            return downX >= bounds.getLeft() && downX <= bounds.getRight() && downY >= bounds.getTop() && downY <= bounds.getBottom();
+        }
+
         return mIntercept;
     }
 
@@ -105,7 +116,7 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
         @Override
         public boolean onDown(MotionEvent e) {
 
-            // Log.e("TAG", "GestureListener-78行-onDown(): ");
+            Log.e("TAG", "GestureListener-78行-onDown(): ");
 
             if (!mDoubleTap) {
                 mIntercept = false;

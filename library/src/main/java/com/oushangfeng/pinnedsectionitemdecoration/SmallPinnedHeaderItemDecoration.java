@@ -447,7 +447,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
         private boolean enableDivider;
 
-        public boolean disableHeaderClick;
+        private boolean disableHeaderClick;
 
         private int[] clickIds;
 
