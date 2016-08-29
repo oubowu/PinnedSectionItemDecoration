@@ -119,9 +119,14 @@ public class MainActivity extends AppCompatActivity {
                 return viewType == BaseHeaderAdapter.TYPE_HEADER;
             }
 
+            @SuppressWarnings("unchecked")
             @Override
             public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
-                return (PinnedHeaderEntity<Integer>) getData().get(position);
+                if (getData() != null && getData().size() > 0) {
+                    return (PinnedHeaderEntity<Integer>) getData().get(position);
+                } else {
+                    return null;
+                }
             }
         };
 
