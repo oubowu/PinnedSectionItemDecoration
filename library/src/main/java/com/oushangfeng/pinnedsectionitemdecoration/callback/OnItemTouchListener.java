@@ -84,13 +84,13 @@ public class OnItemTouchListener<T> implements RecyclerView.OnItemTouchListener 
             final ClickBounds bounds = mBoundsArray.valueAt(0);
             final boolean mUpInside = downX >= bounds.getLeft() && downX <= bounds.getRight() && downY >= bounds.getTop() && downY <= bounds.getBottom();
 
-            if (mUpInside && mHeaderClickListener != null && mClickHeaderInfo != null) {
+            /*if (mUpInside && mHeaderClickListener != null && mClickHeaderInfo != null) {
                 // 自己处理点击标签事件
                 if ((mTmpClickId == HEADER_ID && !mDisableHeaderClick) || mTmpClickId != HEADER_ID) {
                     // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
                     mHeaderClickListener.onHeaderClick(mTmpClickId, mPosition, mClickHeaderInfo);
                 }
-            }
+            }*/
 
             return mUpInside;
         }

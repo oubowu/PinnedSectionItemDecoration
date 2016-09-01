@@ -166,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         };
         mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>().setDividerId(R.drawable.divider).enableDivider(true)
                 .setHeaderClickListener(headerClickListener).create());
+
         mRecyclerView.setAdapter(mAdapter);
     }
 

@@ -80,6 +80,8 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     // 用于锁定画布绘制范围
     private Rect mClipBounds;
 
+    private int mFirstVisiblePosition;
+
     private SmallPinnedHeaderItemDecoration(Builder<T> builder) {
         mEnableDivider = builder.enableDivider;
         mHeaderClickListener = builder.headerClickListener;
@@ -123,7 +125,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         // 检测到标签存在的时候，将标签强制固定在RecyclerView顶部
         createPinnedHeader(parent);
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null && mFirstVisiblePosition >= mHeaderPosition) {
             // 标签相对parent高度加上自身的高度
             final int headerEndAt = mPinnedHeaderParentView.getTop() + mPinnedHeaderParentView.getMeasuredHeight() + mRecyclerViewPaddingTop;
             // 根据xy坐标查找view
@@ -173,7 +175,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null && mFirstVisiblePosition >= mHeaderPosition) {
 
             c.save();
 
@@ -206,17 +208,17 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
         // 获取第一个可见的item位置
-        int firstVisiblePosition = 0;
+        mFirstVisiblePosition = 0;
         int headerPosition;
 
         if (layoutManager instanceof GridLayoutManager) {
-            firstVisiblePosition = ((GridLayoutManager) layoutManager).findFirstVisibleItemPosition();
+            mFirstVisiblePosition = ((GridLayoutManager) layoutManager).findFirstVisibleItemPosition();
         } else if (layoutManager instanceof LinearLayoutManager) {
-            firstVisiblePosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
+            mFirstVisiblePosition = ((LinearLayoutManager) layoutManager).findFirstVisibleItemPosition();
         }
 
         // 通过第一个部分可见的item位置获取标签的位置
-        headerPosition = findPinnedHeaderPosition(firstVisiblePosition);
+        headerPosition = findPinnedHeaderPosition(mFirstVisiblePosition);
 
         if (headerPosition >= 0 && mHeaderPosition != headerPosition) {
 

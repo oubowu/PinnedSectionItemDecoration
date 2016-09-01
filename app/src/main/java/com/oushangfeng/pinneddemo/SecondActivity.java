@@ -132,6 +132,7 @@ public class SecondActivity extends AppCompatActivity {
         mRecyclerView.addItemDecoration(
                 new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.iv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
                         .disableHeaderClick(true).setClickIds(R.id.iv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
+
         mRecyclerView.setAdapter(mAdapter);
 
     }

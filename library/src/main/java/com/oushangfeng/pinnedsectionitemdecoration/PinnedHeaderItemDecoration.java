@@ -72,6 +72,8 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mRight;
     private int mBottom;
 
+    private int mFirstVisiblePosition;
+
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
@@ -136,7 +138,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null&& mFirstVisiblePosition >= mPinnedHeaderPosition) {
 
             mClipBounds = c.getClipBounds();
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
@@ -219,7 +221,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
-        if (mPinnedHeaderView != null) {
+        if (mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
             c.save();
 
             mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
@@ -269,10 +271,10 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         final RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
 
         // 获取第一个可见的item位置
-        int firstVisiblePosition = findFirstVisiblePosition(layoutManager);
+        mFirstVisiblePosition = findFirstVisiblePosition(layoutManager);
 
         // 获取标签的位置，
-        int pinnedHeaderPosition = findPinnedHeaderPosition(firstVisiblePosition);
+        int pinnedHeaderPosition = findPinnedHeaderPosition(mFirstVisiblePosition);
         if (pinnedHeaderPosition >= 0 && mPinnedHeaderPosition != pinnedHeaderPosition) {
 
             // 标签位置有效并且和缓存的位置不同
@@ -376,7 +378,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             }
         }
 
-        return 0;
+        return -1;
     }
 
     /**
@@ -444,7 +446,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         RecyclerView.LayoutManager layoutManager = parent.getLayoutManager();
         if (layoutManager instanceof GridLayoutManager) {
             final int headerPosition = findPinnedHeaderPosition(pos);
-            if ((pos - (headerPosition + 1)) % spanCount == 0) {
+            if (headerPosition >= 0 && (pos - (headerPosition + 1)) % spanCount == 0) {
                 // 找到头部位置减去包括头部位置之前的个数
                 return true;
             }
