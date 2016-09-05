@@ -21,7 +21,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.0'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.1'
 ```
 
 Adapter needs to implement the PinnedHeaderNotifyer interface then tells ItemDecoration which type is the pinned section header and the information of the pinned section header.「[See StockAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FStockAdapter.java)」
