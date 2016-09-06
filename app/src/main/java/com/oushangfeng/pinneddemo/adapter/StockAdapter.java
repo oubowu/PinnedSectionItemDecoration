@@ -46,7 +46,7 @@ public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInf
         switch (holder.getItemViewType()) {
 
             case StockEntity.StockInfo.TYPE_HEADER:
-                holder.setText(R.id.tv_stock_name, item.pinnedHeaderName);
+                holder.setText(R.id.tv_stock_name, item.pinnedHeaderName).addOnClickListener(R.id.checkbox).setChecked(R.id.checkbox, item.check);
                 break;
 
             case StockEntity.StockInfo.TYPE_DATA:
@@ -72,6 +72,9 @@ public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInf
 
     @Override
     public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
-        return ((StockEntity.StockInfo) getData().get(position));
+        if (getData() != null && getData().size() > 0) {
+            return getData().get(position);
+        }
+        return null;
     }
 }

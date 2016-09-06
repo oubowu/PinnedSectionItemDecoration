@@ -25,7 +25,6 @@ public abstract class BaseHeaderAdapter<T extends MultiItemEntity> extends BaseM
 
     protected abstract void addItemTypes();
 
-
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
@@ -36,5 +35,18 @@ public abstract class BaseHeaderAdapter<T extends MultiItemEntity> extends BaseM
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_HEADER);
+    }
+
+    @Override
+    public boolean isPinnedHeaderType(int viewType) {
+        return viewType == TYPE_HEADER;
+    }
+
+    @Override
+    public T getPinnedHeaderInfo(int position) {
+        if (getData() != null && getData().size() > 0) {
+            return getData().get(position);
+        }
+        return null;
     }
 }

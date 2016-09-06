@@ -23,12 +23,9 @@ import java.util.ArrayList;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
- * <p>
- * 这个是单独一个布局的标签
- * <p>
- * porting from https://github.com/takahr/pinned-section-item-decoration
- * <p>
- * 注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签;marginBottom还有问题待解决
+ * <p>这个是单独一个布局的标签</p>
+ * <p>porting from https://github.com/takahr/pinned-section-item-decoration</p>
+ * <p>注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签;marginBottom还有问题待解决</p>
  */
 public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
@@ -49,7 +46,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private View mPinnedHeaderView;
 
     // 缓存的标签位置
-    int mPinnedHeaderPosition = -1;
+    private int mPinnedHeaderPosition = -1;
 
     // 顶部标签的Y轴偏移值
     private int mPinnedHeaderOffset;
@@ -76,6 +73,8 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mBottom;
 
     private int mFirstVisiblePosition;
+
+    private int mDataPositionOffset;
 
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
@@ -239,6 +238,10 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             mPinnedHeaderView.draw(c);
 
             c.restore();
+
+        } else if (mItemTouchListener != null) {
+            // 不绘制的时候，把头部的偏移值偏移用户点击不到的程度
+            mItemTouchListener.invalidTopAndBottom(-1000);
         }
     }
 
@@ -264,7 +267,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      * @param parent
      */
     @SuppressWarnings("unchecked")
-    private void createPinnedHeader(RecyclerView parent) {
+    private void createPinnedHeader(final RecyclerView parent) {
 
         if (mAdapter == null) {
             // checkCache的话RecyclerView未设置之前mAdapter为空
@@ -358,22 +361,32 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                     mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
                 }
+            }
+
+            if (mHeaderClickListener != null) {
                 // OnItemTouchListener.HEADER_ID代表是标签的Id
-                mItemTouchListener.setViewAndBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mLeft, mTop, mRight, mBottom));
+                mItemTouchListener.addViewAndBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        mItemTouchListener.setViewAndBounds(mClickId,
-                                new ClickBounds(view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
+                        mItemTouchListener.addViewAndBounds(mClickId,
+                                new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
                     }
                 }
-            }
-            if (mHeaderClickListener != null) {
-                mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition, (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition));
+                mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset,
+                        (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset));
             }
 
         }
 
+    }
+
+    public void setDataPositionOffset(int offset) {
+        mDataPositionOffset = offset;
+    }
+
+    public int getDataPositionOffset() {
+        return mDataPositionOffset;
     }
 
     /**
@@ -478,6 +491,14 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             spanCount = ((StaggeredGridLayoutManager) layoutManager).getSpanCount();
         }
         return spanCount;
+    }
+
+    public View getPinnedHeaderView() {
+        return mPinnedHeaderView;
+    }
+
+    public int getPinnedHeaderPosition() {
+        return mPinnedHeaderPosition;
     }
 
     public static class Builder<T> {

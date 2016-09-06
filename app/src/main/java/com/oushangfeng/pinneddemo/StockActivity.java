@@ -8,8 +8,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.CheckBox;
 import android.widget.Toast;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.google.gson.Gson;
 import com.oushangfeng.pinneddemo.adapter.StockAdapter;
 import com.oushangfeng.pinneddemo.entitiy.StockEntity;
@@ -27,6 +32,7 @@ public class StockActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private StockAdapter mAdapter;
+    private PinnedHeaderItemDecoration<StockEntity.StockInfo> mHeaderItemDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +50,10 @@ public class StockActivity extends AppCompatActivity {
 
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(StockActivity.this, LinearLayoutManager.VERTICAL, false));
 
-                final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+                OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
 
                     @Override
-                    public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
+                    public void onHeaderClick(View view, int id, int position, StockEntity.StockInfo data) {
                         switch (id) {
                             case R.id.fl:
                                 // case OnItemTouchListener.HEADER_ID:
@@ -56,13 +62,24 @@ public class StockActivity extends AppCompatActivity {
                             case R.id.iv_more:
                                 Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
                                 break;
+                            case R.id.checkbox:
+                                final CheckBox checkBox = (CheckBox) view;
+                                checkBox.setChecked(!checkBox.isChecked());
+                                // 刷新ItemDecorations，导致重绘刷新头部
+                                mRecyclerView.invalidateItemDecorations();
+
+                                mAdapter.getData().get(position).check = checkBox.isChecked();
+                                mAdapter.notifyItemChanged(position + mHeaderItemDecoration.getDataPositionOffset());
+
+                                break;
                         }
                     }
 
                 };
 
-                mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
-                        .setClickIds(R.id.iv_more, R.id.fl).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create());
+                mHeaderItemDecoration = new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
+                        .setClickIds(R.id.iv_more, R.id.fl, R.id.checkbox).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create();
+                mRecyclerView.addItemDecoration(mHeaderItemDecoration);
 
             }
 
@@ -75,7 +92,7 @@ public class StockActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
 
                 Gson gson = new Gson();
-                
+
                 final StockEntity stockEntity = gson.fromJson(result, StockEntity.class);
 
                 List<StockEntity.StockInfo> data = new ArrayList<>();
@@ -106,6 +123,25 @@ public class StockActivity extends AppCompatActivity {
 
                 mAdapter = new StockAdapter(data);
                 mRecyclerView.setAdapter(mAdapter);
+
+                mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
+                    @Override
+                    public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                        if (view instanceof CheckBox) {
+                            ((CheckBox) view).setChecked(!((CheckBox) view).isChecked());
+                            mAdapter.getData().get(i).check = ((CheckBox) view).isChecked();
+                            if (mHeaderItemDecoration.getPinnedHeaderView() != null && mHeaderItemDecoration.getPinnedHeaderPosition() >= i + mAdapter
+                                    .getHeaderLayoutCount()) {
+                                ((CheckBox) mHeaderItemDecoration.getPinnedHeaderView().findViewById(view.getId())).setChecked(((CheckBox) view).isChecked());
+                            }
+                        }
+                    }
+                });
+
+
+                mAdapter.addHeaderView(LayoutInflater.from(StockActivity.this).inflate(R.layout.item_data, mRecyclerView, false));
+                // 因为添加了1个头部，他是不在clickAdapter.getData这个数据里面的，所以这里要设置数据的偏移值告知ItemDecoration真正的数据索引
+                mHeaderItemDecoration.setDataPositionOffset(mAdapter.getHeaderLayoutCount());
 
             }
 

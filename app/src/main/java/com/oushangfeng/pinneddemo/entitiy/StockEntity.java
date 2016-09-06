@@ -52,6 +52,9 @@ public class StockEntity {
         public void setItemType(int itemType) {
             this.itemType = itemType;
         }
+
+        public boolean check;
+
     }
 
 }

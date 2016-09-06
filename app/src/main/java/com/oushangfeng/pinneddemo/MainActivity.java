@@ -84,7 +84,6 @@ public class MainActivity extends AppCompatActivity {
                 switch (holder.getItemViewType()) {
                     case BaseHeaderAdapter.TYPE_HEADER:
                         holder.setText(R.id.tv_animal, item.getPinnedHeaderName());
-                        // holder.setOnClickListener(R.id.tv_animal, new OnItemChildClickListener());
                         break;
                     case BaseHeaderAdapter.TYPE_DATA:
 
@@ -93,7 +92,6 @@ public class MainActivity extends AppCompatActivity {
                         if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
                             // 瀑布流布局记录随机高度，就不会导致Item由于高度变化乱跑，导致画分隔线出现问题
                             // 随机高度, 模拟瀑布效果.
-
 
                             if (mRandomHeights == null) {
                                 mRandomHeights = new SparseIntArray(getItemCount());
@@ -115,19 +113,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            @Override
-            public boolean isPinnedHeaderType(int viewType) {
-                return viewType == BaseHeaderAdapter.TYPE_HEADER;
-            }
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
-                if (getData() != null && getData().size() > 0) {
-                    return getData().get(position);
-                }
-                return null;
-            }
         };
 
 
@@ -151,17 +136,17 @@ public class MainActivity extends AppCompatActivity {
 
         OnHeaderClickListener<PinnedHeaderEntity<Integer>> headerClickListener = new OnHeaderClickListener<PinnedHeaderEntity<Integer>>() {
             @Override
-            public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            public void onHeaderClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
                 Toast.makeText(MainActivity.this, "click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            public void onHeaderLongClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
                 Toast.makeText(MainActivity.this, "long click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            public void onHeaderDoubleClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
                 Toast.makeText(MainActivity.this, "double click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
         };

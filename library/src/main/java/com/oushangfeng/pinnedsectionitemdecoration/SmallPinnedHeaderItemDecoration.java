@@ -23,10 +23,8 @@ import java.util.ArrayList;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
- * <p>
- * 这个是附在数据布局的小标签，只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景
- * <p>
- * 注意：标签不能设置marginTop，因为往上滚动遮不住真正的标签
+ * <p>这个是附在数据布局的小标签，只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景</p>
+ * <p>注意：标签不能设置marginTop，因为往上滚动遮不住真正的标签</p>
  */
 public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
@@ -84,6 +82,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     private Rect mClipBounds;
 
     private int mFirstVisiblePosition;
+    private int mDataPositionOffset;
 
     private SmallPinnedHeaderItemDecoration(Builder<T> builder) {
         mEnableDivider = builder.enableDivider;
@@ -196,6 +195,9 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             mPinnedHeaderView.draw(c);
 
             c.restore();
+        } else if (mItemTouchListener != null) {
+            // 不绘制的时候，把头部的偏移值偏移用户点击不到的程度
+            mItemTouchListener.invalidTopAndBottom(-1000);
         }
     }
 
@@ -268,21 +270,30 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                     mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
                 }
+            }
+            if (mHeaderClickListener != null) {
                 // -1代表是标签的Id
-                mItemTouchListener.setViewAndBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mLeft, mTop, mRight, mBottom));
+                mItemTouchListener.addViewAndBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        mItemTouchListener.setViewAndBounds(mClickId,
-                                new ClickBounds(view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
+                        mItemTouchListener.addViewAndBounds(mClickId,
+                                new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
                     }
                 }
-            }
-            if (mHeaderClickListener != null) {
-                mItemTouchListener.setClickHeaderInfo(mHeaderPosition, (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition));
+                mItemTouchListener.setClickHeaderInfo(mHeaderPosition - mDataPositionOffset,
+                        (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition - mDataPositionOffset));
             }
 
         }
+    }
+
+    public int getDataPositionOffset() {
+        return mDataPositionOffset;
+    }
+
+    public void setDataPositionOffset(int offset) {
+        mDataPositionOffset = offset;
     }
 
     // 测量标签父布局的宽高
@@ -451,6 +462,14 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                 throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
             }
         }
+    }
+
+    public View getPinnedHeaderView() {
+        return mPinnedHeaderView;
+    }
+
+    public int getPinnedHeaderPosition() {
+        return mHeaderPosition;
     }
 
     public static class Builder<T> {

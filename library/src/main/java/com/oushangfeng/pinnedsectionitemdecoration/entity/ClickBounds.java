@@ -1,11 +1,14 @@
 package com.oushangfeng.pinnedsectionitemdecoration.entity;
 
+import android.view.View;
+
 /**
  * Created by Oubowu on 2016/7/27 23:52.
- * <p>
- * 点击范围实体类，用于点击标签时做点击判断
+ * <p>点击范围实体类，用于点击标签时做点击判断</p>
  */
 public class ClickBounds {
+
+    private View mView;
 
     private int mLeft;
     private int mTop;
@@ -16,7 +19,8 @@ public class ClickBounds {
     private int mFirstTop;
     private int mFirstBottom;
 
-    public ClickBounds(int left, int top, int right, int bottom) {
+    public ClickBounds(View view, int left, int top, int right, int bottom) {
+        mView = view;
         mLeft = left;
         mTop = top;
         mRight = right;
@@ -69,19 +73,11 @@ public class ClickBounds {
         return mFirstBottom;
     }
 
-    @Override
-    public String toString() {
-        return "ClickBounds{" +
-                "mLeft=" + mLeft +
-                ", mTop=" + mTop +
-                ", mRight=" + mRight +
-                ", mBottom=" + mBottom +
-                ", mFirstTop=" + mFirstTop +
-                ", mFirstBottom=" + mFirstBottom +
-                '}';
-    }
-
     public int getFirstTop() {
         return mFirstTop;
+    }
+
+    public View getView() {
+        return mView;
     }
 }

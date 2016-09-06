@@ -79,9 +79,6 @@ public class SecondActivity extends AppCompatActivity {
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_small_pinned_header));
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
 
-                        // holder.setOnClickListener(R.id.iv_small_pinned_header, new OnItemChildClickListener());
-                        // holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
-
                         holder.addOnClickListener(R.id.iv_small_pinned_header).addOnClickListener(R.id.iv_animal);
 
                         break;
@@ -89,37 +86,19 @@ public class SecondActivity extends AppCompatActivity {
                         holder.setText(R.id.tv_pos, holder.getLayoutPosition() + "");
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
 
-                        // holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
-
                         holder.addOnClickListener(R.id.iv_animal);
 
                         break;
                 }
             }
 
-            @Override
-            public boolean isPinnedHeaderType(int viewType) {
-                return viewType == BaseHeaderAdapter.TYPE_HEADER;
-            }
-
-            @Override
-            public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
-                return (PinnedHeaderEntity<Integer>) getData().get(position);
-            }
         };
 
-        /*mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
+        /*mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
-                PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getItem(i);
-                switch (view.getId()) {
-                    case R.id.iv_small_pinned_header:
-                        Toast.makeText(SecondActivity.this, "click tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.iv_animal:
-                        Toast.makeText(SecondActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
-                        break;
-                }
+            public void SimpleOnItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                PinnedHeaderEntity<Integer> entity = mAdapter.getItem(i);
+                Toast.makeText(SecondActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
             }
         });*/
 
@@ -143,7 +122,7 @@ public class SecondActivity extends AppCompatActivity {
         OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
 
             @Override
-            public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
+            public void onHeaderClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
                 if (id == R.id.iv_small_pinned_header) {
                     Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                 }
