@@ -5,7 +5,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 - Small pinned section header support vertical orientation of the LinearLayoutManager and GridLayoutManager which its span count is 1.
 - Support the header of the click, double click and long press event.
 - Support the child view of the click, double click and long press event.
-- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 97-109 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
+- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 92-108 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L92-L108)」)
 
 ## Screenshot
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -21,21 +21,9 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.1'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3'
 ```
 
-Adapter needs to implement the PinnedHeaderNotifyer interface then tells ItemDecoration which type is the pinned section header and the information of the pinned section header.「[See StockAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FStockAdapter.java)」
-```
-    @Override
-    public boolean isPinnedHeaderType(int viewType) {
-        return viewType == StockEntity.StockInfo.TYPE_HEADER;
-    }
-
-    @Override
-    public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
-        return ((StockEntity.StockInfo) getData().get(position));
-    }
-```
 Adapter needs to process the span count of header through the FullSpanUtil.
 ```
     @Override
@@ -51,27 +39,39 @@ Adapter needs to process the span count of header through the FullSpanUtil.
     }
 ```
 
-To achieve large pinned section header, RecyclerView only need to add a PinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java)」
+To achieve large pinned section header, RecyclerView only need to add a PinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java#L53-L83)」
 ``` 
-     final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+      OnHeaderClickAdapter clickAdapter = new OnHeaderClickAdapter() {
 
-         @Override
-         public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
-             switch (id) {
-                 case R.id.fl:
-                     // case OnItemTouchListener.HEADER_ID:
-                     Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
-                     break;
-                 case R.id.iv_more:
-                     Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
-                     break;
-             }
-         }
+          @Override
+          public void onHeaderClick(View view, int id, int position) {
+              switch (id) {
+                  case R.id.fl:
+                       // case OnItemTouchListener.HEADER_ID:
+                       Toast.makeText(StockActivity.this, "click, tag: " + mAdapter.getData().get(position).pinnedHeaderName, Toast.LENGTH_SHORT).show();
+                       break;
+                   case R.id.iv_more:
+                       Toast.makeText(StockActivity.this, "click " + mAdapter.getData().get(position).pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT)
+                             .show();
+                       break;
+                   case R.id.checkbox:
+                       final CheckBox checkBox = (CheckBox) view;
+                       checkBox.setChecked(!checkBox.isChecked());
+                       // 刷新ItemDecorations，导致重绘刷新头部
+                       mRecyclerView.invalidateItemDecorations();
 
-     };
+                       mAdapter.getData().get(position).check = checkBox.isChecked();
+                       mAdapter.notifyItemChanged(position + mHeaderItemDecoration.getDataPositionOffset());
+
+                       break;
+               }
+           }
+
+       };
 
      mRecyclerView.addItemDecoration(
-             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>()
+             // Set the type of pinned header
+             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>(StockEntity.StockInfo.TYPE_HEADER)
              // Set separator line resources id.
              .setDividerId(R.drawable.divider)
              // Enable draw the separator line, by default it's disable.
@@ -145,20 +145,20 @@ This is a layout B with a small pinned section header.
 ```
 ![布局B](/pic/small_pinned_header.png) 
 
-The layout B add a header compare whit layout A，then RecyclerView only need to add a SmallPinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)」
+The layout B add a header compare whit layout A，then RecyclerView only need to add a SmallPinnedHeaderItemDecoration. Note that the top layer of the header where the layout can not be set marginTop.「[See SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java#L114-L126)」
 ```
-    OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
+     OnHeaderClickAdapter headerClickAdapter = new OnHeaderClickAdapter() {
 
-        @Override
-        public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
-            if (id == R.id.iv_small_pinned_header) {
-                Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-            }
-        }
+          @Override
+          public void onHeaderClick(View view, int id, int position) {
+              if (id == R.id.iv_small_pinned_header) {
+                  Toast.makeText(SecondActivity.this, "click tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+              }
+          }
      };
      mRecyclerView.addItemDecoration(
-             // Constructor need to set the id of header.
-             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header)
+             // Constructor need to set the id and type of the header 
+             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
              // Enable draw the separator line, by default it's disable.
              .enableDivider(true)
              // Set separator line resources id.
@@ -173,10 +173,6 @@ The layout B add a header compare whit layout A，then RecyclerView only need to
              .create());
     
 ```
-
-## To be continued
-- Solve the problem of setting the marginTop.
-- Solve the problem of setting the marginBottom.
 
 #### License
 ```

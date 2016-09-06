@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
@@ -26,12 +25,12 @@ import java.util.ArrayList;
  * <p>这个是附在数据布局的小标签，只支持LinearLayoutManager或者GridLayoutManager且一行只有一列的情况，这个比较符合使用场景</p>
  * <p>注意：标签不能设置marginTop，因为往上滚动遮不住真正的标签</p>
  */
-public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
+public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     // 标签的id值
     private int mPinnedHeaderId;
 
-    private OnHeaderClickListener<T> mHeaderClickListener;
+    private OnHeaderClickListener mHeaderClickListener;
 
     private int[] mClickIds;
 
@@ -58,7 +57,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     private int mHeaderTopMargin;
     private int mHeaderBottomMargin;
 
-    private OnItemTouchListener<T> mItemTouchListener;
+    private OnItemTouchListener mItemTouchListener;
 
     private int mLeft;
     private int mTop;
@@ -84,13 +83,16 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
     private int mFirstVisiblePosition;
     private int mDataPositionOffset;
 
-    private SmallPinnedHeaderItemDecoration(Builder<T> builder) {
+    private int mPinnedHeaderType;
+
+    private SmallPinnedHeaderItemDecoration(Builder builder) {
         mEnableDivider = builder.enableDivider;
         mHeaderClickListener = builder.headerClickListener;
         mDividerId = builder.dividerId;
         mPinnedHeaderId = builder.pinnedHeaderId;
         mClickIds = builder.clickIds;
         mDisableHeaderClick = builder.disableHeaderClick;
+        mPinnedHeaderType = builder.pinnedHeaderType;
     }
 
     @Override
@@ -253,7 +255,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             mPinnedHeaderView.layout(mLeft, mTop, mRight - mHeaderRightMargin, mBottom - mHeaderBottomMargin);
 
             if (mItemTouchListener == null) {
-                mItemTouchListener = new OnItemTouchListener<T>(parent.getContext());
+                mItemTouchListener = new OnItemTouchListener(parent.getContext());
                 try {
                     final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
                     field.setAccessible(true);
@@ -281,8 +283,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
                                 new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
                     }
                 }
-                mItemTouchListener.setClickHeaderInfo(mHeaderPosition - mDataPositionOffset,
-                        (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mHeaderPosition - mDataPositionOffset));
+                mItemTouchListener.setClickHeaderInfo(mHeaderPosition - mDataPositionOffset);
             }
 
         }
@@ -444,7 +445,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
     // 检查是否是标签类型
     private boolean isPinnedViewType(int viewType) {
-        return ((PinnedHeaderNotifyer) mAdapter).isPinnedHeaderType(viewType);
+        return viewType == mPinnedHeaderType;
     }
 
     // 检查缓存
@@ -455,12 +456,13 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
             // 适配器有差异，清空缓存
             mPinnedHeaderView = null;
             mHeaderPosition = -1;
-            if (adapter instanceof PinnedHeaderNotifyer) {
+            mAdapter = adapter;
+            /*if (adapter instanceof PinnedHeaderNotifyer) {
                 // 明确了适配器必须继承PinnedHeaderAdapter接口，因为没有这个就获取不到RecyclerView哪个是标签
                 mAdapter = adapter;
             } else {
                 throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
-            }
+            }*/
         }
     }
 
@@ -472,9 +474,9 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
         return mHeaderPosition;
     }
 
-    public static class Builder<T> {
+    public static class Builder {
 
-        private OnHeaderClickListener<T> headerClickListener;
+        private OnHeaderClickListener headerClickListener;
 
         private int dividerId;
 
@@ -486,13 +488,17 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
         private int[] clickIds;
 
+        private int pinnedHeaderType;
+
         /**
          * 构造方法
          *
-         * @param pinnedHeaderId 小标签对应的ID
+         * @param pinnedHeaderId   小标签对应的ID
+         * @param pinnedHeaderType 粘性标签的类型
          */
-        public Builder(int pinnedHeaderId) {
+        public Builder(int pinnedHeaderId, int pinnedHeaderType) {
             this.pinnedHeaderId = pinnedHeaderId;
+            this.pinnedHeaderType = pinnedHeaderType;
         }
 
         /**
@@ -501,7 +507,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
          * @param headerClickListener 监听，若不设置这个setClickIds无效
          * @return 构建者
          */
-        public Builder<T> setHeaderClickListener(OnHeaderClickListener<T> headerClickListener) {
+        public Builder setHeaderClickListener(OnHeaderClickListener headerClickListener) {
             this.headerClickListener = headerClickListener;
             return this;
         }
@@ -512,7 +518,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
          * @param dividerId 资源ID，若不设置这个并且enableDivider=true时，使用默认的分隔线
          * @return 构建者
          */
-        public Builder<T> setDividerId(int dividerId) {
+        public Builder setDividerId(int dividerId) {
             this.dividerId = dividerId;
             return this;
         }
@@ -523,7 +529,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
          * @param enableDivider true为绘制，false不绘制，false时setDividerId无效
          * @return 构建者
          */
-        public Builder<T> enableDivider(boolean enableDivider) {
+        public Builder enableDivider(boolean enableDivider) {
             this.enableDivider = enableDivider;
             return this;
         }
@@ -534,7 +540,7 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
          * @param clickIds 标签或其内部的子控件的ID
          * @return 构建者
          */
-        public Builder<T> setClickIds(int... clickIds) {
+        public Builder setClickIds(int... clickIds) {
             this.clickIds = clickIds;
             return this;
         }
@@ -545,13 +551,13 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
          * @param disableHeaderClick true为关闭标签点击事件，false为开启标签点击事件
          * @return 构建者
          */
-        public Builder<T> disableHeaderClick(boolean disableHeaderClick) {
+        public Builder disableHeaderClick(boolean disableHeaderClick) {
             this.disableHeaderClick = disableHeaderClick;
             return this;
         }
 
-        public SmallPinnedHeaderItemDecoration<T> create() {
-            return new SmallPinnedHeaderItemDecoration<T>(this);
+        public SmallPinnedHeaderItemDecoration create() {
+            return new SmallPinnedHeaderItemDecoration(this);
         }
     }
 

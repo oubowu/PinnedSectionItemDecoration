@@ -32,7 +32,7 @@ public class StockActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private StockAdapter mAdapter;
-    private PinnedHeaderItemDecoration<StockEntity.StockInfo> mHeaderItemDecoration;
+    private PinnedHeaderItemDecoration mHeaderItemDecoration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +50,18 @@ public class StockActivity extends AppCompatActivity {
 
                 mRecyclerView.setLayoutManager(new LinearLayoutManager(StockActivity.this, LinearLayoutManager.VERTICAL, false));
 
-                OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+                OnHeaderClickAdapter clickAdapter = new OnHeaderClickAdapter() {
 
                     @Override
-                    public void onHeaderClick(View view, int id, int position, StockEntity.StockInfo data) {
+                    public void onHeaderClick(View view, int id, int position) {
                         switch (id) {
                             case R.id.fl:
                                 // case OnItemTouchListener.HEADER_ID:
-                                Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "click, tag: " + mAdapter.getData().get(position).pinnedHeaderName, Toast.LENGTH_SHORT).show();
                                 break;
                             case R.id.iv_more:
-                                Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(StockActivity.this, "click " + mAdapter.getData().get(position).pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT)
+                                        .show();
                                 break;
                             case R.id.checkbox:
                                 final CheckBox checkBox = (CheckBox) view;
@@ -77,7 +78,7 @@ public class StockActivity extends AppCompatActivity {
 
                 };
 
-                mHeaderItemDecoration = new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>().setDividerId(R.drawable.divider).enableDivider(true)
+                mHeaderItemDecoration = new PinnedHeaderItemDecoration.Builder(StockEntity.StockInfo.TYPE_HEADER).setDividerId(R.drawable.divider).enableDivider(true)
                         .setClickIds(R.id.iv_more, R.id.fl, R.id.checkbox).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create();
                 mRecyclerView.addItemDecoration(mHeaderItemDecoration);
 

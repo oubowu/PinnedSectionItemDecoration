@@ -94,14 +94,6 @@ public class SecondActivity extends AppCompatActivity {
 
         };
 
-        /*mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
-            @Override
-            public void SimpleOnItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
-                PinnedHeaderEntity<Integer> entity = mAdapter.getItem(i);
-                Toast.makeText(SecondActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
-            }
-        });*/
-
         mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
             public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
@@ -119,18 +111,17 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         //        mRecyclerView.setLayoutManager(new GridLayoutManager(this, 1, LinearLayoutManager.VERTICAL, false));
-        OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
+        OnHeaderClickAdapter headerClickAdapter = new OnHeaderClickAdapter() {
 
             @Override
-            public void onHeaderClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
+            public void onHeaderClick(View view, int id, int position) {
                 if (id == R.id.iv_small_pinned_header) {
-                    Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SecondActivity.this, "click tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                 }
             }
         };
-        mRecyclerView.addItemDecoration(
-                new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.iv_small_pinned_header).enableDivider(true).setDividerId(R.drawable.divider)
-                        .disableHeaderClick(true).setClickIds(R.id.iv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
+        mRecyclerView.addItemDecoration(new SmallPinnedHeaderItemDecoration.Builder(R.id.iv_small_pinned_header, BaseHeaderAdapter.TYPE_HEADER).enableDivider(true)
+                .setDividerId(R.drawable.divider).disableHeaderClick(true).setClickIds(R.id.iv_small_pinned_header).setHeaderClickListener(headerClickAdapter).create());
 
         mRecyclerView.setAdapter(mAdapter);
 

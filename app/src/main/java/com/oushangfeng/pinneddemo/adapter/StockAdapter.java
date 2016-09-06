@@ -12,7 +12,6 @@ import com.chad.library.adapter.base.BaseViewHolder;
 import com.oushangfeng.pinneddemo.R;
 import com.oushangfeng.pinneddemo.StockActivity;
 import com.oushangfeng.pinneddemo.entitiy.StockEntity;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.FullSpanUtil;
 
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.List;
  * Created by Oubowu on 2016/8/3 14:43.
  * 直接继承BaseMultiItemQuickAdapter单独实现一个适配器的写法
  */
-public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInfo> implements PinnedHeaderNotifyer<StockEntity.StockInfo> {
+public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInfo> {
 
     public StockAdapter(List<StockEntity.StockInfo> data) {
         super(data);
@@ -65,16 +64,4 @@ public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInf
         }
     }
 
-    @Override
-    public boolean isPinnedHeaderType(int viewType) {
-        return viewType == StockEntity.StockInfo.TYPE_HEADER;
-    }
-
-    @Override
-    public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
-        if (getData() != null && getData().size() > 0) {
-            return getData().get(position);
-        }
-        return null;
-    }
 }

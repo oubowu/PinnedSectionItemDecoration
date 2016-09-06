@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
@@ -27,9 +26,9 @@ import java.util.ArrayList;
  * <p>porting from https://github.com/takahr/pinned-section-item-decoration</p>
  * <p>注意：标签所在最外层布局不能设置marginTop，因为往上滚动遮不住真正的标签;marginBottom还有问题待解决</p>
  */
-public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
+public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
-    private OnHeaderClickListener<T> mHeaderClickListener;
+    private OnHeaderClickListener mHeaderClickListener;
 
     private boolean mEnableDivider;
 
@@ -65,7 +64,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
     private int mHeaderBottomMargin;
 
     // 用于处理头部点击事件屏蔽与响应
-    private OnItemTouchListener<T> mItemTouchListener;
+    private OnItemTouchListener mItemTouchListener;
 
     private int mLeft;
     private int mTop;
@@ -76,17 +75,20 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
     private int mDataPositionOffset;
 
+    private int mPinnedHeaderType;
+
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
     // 3.getItemOffsets 可以通过outRect.set()为每个Item设置一定的偏移量，主要用于绘制Decorator。
 
-    private PinnedHeaderItemDecoration(Builder<T> builder) {
+    private PinnedHeaderItemDecoration(Builder builder) {
         mEnableDivider = builder.enableDivider;
         mHeaderClickListener = builder.headerClickListener;
         mDividerId = builder.dividerId;
         mClickIds = builder.clickIds;
         mDisableHeaderClick = builder.disableHeaderClick;
+        mPinnedHeaderType = builder.pinnedHeaderType;
     }
 
     @Override
@@ -344,7 +346,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             mPinnedHeaderView.layout(mLeft, mTop, mRight - mHeaderRightMargin, mBottom - mHeaderBottomMargin);
 
             if (mItemTouchListener == null) {
-                mItemTouchListener = new OnItemTouchListener<T>(parent.getContext());
+                mItemTouchListener = new OnItemTouchListener(parent.getContext());
                 try {
                     final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
                     field.setAccessible(true);
@@ -373,8 +375,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
                                 new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
                     }
                 }
-                mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset,
-                        (T) ((PinnedHeaderNotifyer) mAdapter).getPinnedHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset));
+                mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset);
             }
 
         }
@@ -415,7 +416,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
      * @return
      */
     private boolean isPinnedHeaderType(int type) {
-        return ((PinnedHeaderNotifyer) mAdapter).isPinnedHeaderType(type);
+        return mPinnedHeaderType == type;
     }
 
     /**
@@ -452,12 +453,13 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
             // 适配器为null或者不同，清空缓存
             mPinnedHeaderView = null;
             mPinnedHeaderPosition = -1;
-            // 明确了适配器必须继承PinnedHeaderNotifyer接口，因为没有这个就获取不到哪个位置对应的类型是标签类型
+            mAdapter = adapter;
+            /*// 明确了适配器必须继承PinnedHeaderNotifyer接口，因为没有这个就获取不到哪个位置对应的类型是标签类型
             if (adapter instanceof PinnedHeaderNotifyer) {
                 mAdapter = adapter;
             } else {
                 throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
-            }
+            }*/
         }
     }
 
@@ -501,9 +503,9 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
         return mPinnedHeaderPosition;
     }
 
-    public static class Builder<T> {
+    public static class Builder {
 
-        private OnHeaderClickListener<T> headerClickListener;
+        private OnHeaderClickListener headerClickListener;
 
         private int dividerId;
 
@@ -511,9 +513,17 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
 
         private int[] clickIds;
 
-        public boolean disableHeaderClick;
+        private boolean disableHeaderClick;
 
-        public Builder() {
+        private int pinnedHeaderType;
+
+        /**
+         * 构造方法
+         *
+         * @param pinnedHeaderType 粘性标签的类型
+         */
+        public Builder(int pinnedHeaderType) {
+            this.pinnedHeaderType = pinnedHeaderType;
         }
 
         /**
@@ -522,7 +532,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          * @param headerClickListener 监听，若不设置这个setClickIds无效
          * @return 构建者
          */
-        public Builder<T> setHeaderClickListener(OnHeaderClickListener<T> headerClickListener) {
+        public Builder setHeaderClickListener(OnHeaderClickListener headerClickListener) {
             this.headerClickListener = headerClickListener;
             return this;
         }
@@ -533,7 +543,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          * @param dividerId 资源ID，若不设置这个并且enableDivider=true时，使用默认的分隔线
          * @return 构建者
          */
-        public Builder<T> setDividerId(int dividerId) {
+        public Builder setDividerId(int dividerId) {
             this.dividerId = dividerId;
             return this;
         }
@@ -544,7 +554,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          * @param enableDivider true为绘制，false不绘制，false时setDividerId无效
          * @return 构建者
          */
-        public Builder<T> enableDivider(boolean enableDivider) {
+        public Builder enableDivider(boolean enableDivider) {
             this.enableDivider = enableDivider;
             return this;
         }
@@ -555,7 +565,7 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          * @param clickIds 标签或其内部的子控件的ID
          * @return 构建者
          */
-        public Builder<T> setClickIds(int... clickIds) {
+        public Builder setClickIds(int... clickIds) {
             this.clickIds = clickIds;
             return this;
         }
@@ -566,13 +576,13 @@ public class PinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecoration {
          * @param disableHeaderClick true为关闭标签点击事件，false为开启标签点击事件
          * @return 构建者
          */
-        public Builder<T> disableHeaderClick(boolean disableHeaderClick) {
+        public Builder disableHeaderClick(boolean disableHeaderClick) {
             this.disableHeaderClick = disableHeaderClick;
             return this;
         }
 
-        public PinnedHeaderItemDecoration<T> create() {
-            return new PinnedHeaderItemDecoration<T>(this);
+        public PinnedHeaderItemDecoration create() {
+            return new PinnedHeaderItemDecoration(this);
         }
 
     }

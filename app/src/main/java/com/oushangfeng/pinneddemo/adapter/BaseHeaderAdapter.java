@@ -4,7 +4,6 @@ import android.support.v7.widget.RecyclerView;
 
 import com.chad.library.adapter.base.BaseMultiItemQuickAdapter;
 import com.chad.library.adapter.base.entity.MultiItemEntity;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.FullSpanUtil;
 
 import java.util.List;
@@ -13,7 +12,7 @@ import java.util.List;
  * Created by Oubowu on 2016/8/3 20:40.
  * 继承BaseMultiItemQuickAdapter的一个适配器基类
  */
-public abstract class BaseHeaderAdapter<T extends MultiItemEntity> extends BaseMultiItemQuickAdapter<T> implements PinnedHeaderNotifyer<T> {
+public abstract class BaseHeaderAdapter<T extends MultiItemEntity> extends BaseMultiItemQuickAdapter<T> {
 
     public static final int TYPE_HEADER = 1;
     public static final int TYPE_DATA = 2;
@@ -37,16 +36,4 @@ public abstract class BaseHeaderAdapter<T extends MultiItemEntity> extends BaseM
         FullSpanUtil.onViewAttachedToWindow(holder, this, TYPE_HEADER);
     }
 
-    @Override
-    public boolean isPinnedHeaderType(int viewType) {
-        return viewType == TYPE_HEADER;
-    }
-
-    @Override
-    public T getPinnedHeaderInfo(int position) {
-        if (getData() != null && getData().size() > 0) {
-            return getData().get(position);
-        }
-        return null;
-    }
 }

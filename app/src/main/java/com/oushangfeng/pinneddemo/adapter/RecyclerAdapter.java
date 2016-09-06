@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import com.oushangfeng.pinneddemo.callback.OnItemClickListener;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinneddemo.holder.RecyclerViewHolder;
-import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.FullSpanUtil;
 
 import java.util.List;
@@ -19,7 +18,7 @@ import java.util.List;
  * 适配器
  */
 @Deprecated
-public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> implements PinnedHeaderNotifyer<T> {
+public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extends RecyclerView.Adapter<RecyclerViewHolder> {
 
     public final static int TYPE_DATA = 1;
     public final static int TYPE_SECTION = 2;
@@ -67,16 +66,6 @@ public abstract class RecyclerAdapter<T, V extends PinnedHeaderEntity<T>> extend
     @Override
     public int getItemViewType(int position) {
         return mData.get(position).getItemType();
-    }
-
-    @Override
-    public boolean isPinnedHeaderType(int viewType) {
-        return viewType == TYPE_SECTION;
-    }
-
-    @Override
-    public T getPinnedHeaderInfo(int position) {
-        return mData == null ? null : mData.get(position).getData();
     }
 
     public abstract int getItemLayoutId(int viewType);

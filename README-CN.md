@@ -5,7 +5,7 @@
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签的单击、双击和长按事件
 - 支持标签内部子控件的单击、双击和长按事件
-- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 97-109行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java)」)
+- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 92-108行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L92-L108)」)
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -21,21 +21,9 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.1'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3'
 ```
 
-RecyclerView的Adapter需要实现PinnedHeaderNotifyer接口，重写方法告诉ItemDecoration哪种类型是粘性标签类型和某个位置粘性标签的信息(用于点击标签事件)「[供参考的StockAdapter](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2Fadapter%2FStockAdapter.java)」
-```
-    @Override
-    public boolean isPinnedHeaderType(int viewType) {
-        return viewType == StockEntity.StockInfo.TYPE_HEADER;
-    }
-
-    @Override
-    public StockEntity.StockInfo getPinnedHeaderInfo(int position) {
-        return ((StockEntity.StockInfo) getData().get(position));
-    }
-```
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理
 ```
     @Override
@@ -52,27 +40,39 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 ```
 
 实现大粘性标签RecyclerView只需要添加一个PinnedHeaderItemDecoration，由于参数太多，现在只支持使用创建者模式创建，注意大标签所在的最外层布局不能设置marginTop，暂时没想到方法解决
-往上滚动遮不住真正的标签「[供参考的StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java)」
+往上滚动遮不住真正的标签「[供参考的StockActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FStockActivity.java#L53-L83)」
 ``` 
-     final OnHeaderClickAdapter<StockEntity.StockInfo> clickAdapter = new OnHeaderClickAdapter<StockEntity.StockInfo>() {
+      OnHeaderClickAdapter clickAdapter = new OnHeaderClickAdapter() {
 
-         @Override
-         public void onHeaderClick(int id, int position, StockEntity.StockInfo data) {
-             switch (id) {
-                 case R.id.fl:
-                     // case OnItemTouchListener.HEADER_ID:
-                     Toast.makeText(StockActivity.this, "click, tag: " + data.pinnedHeaderName, Toast.LENGTH_SHORT).show();
-                     break;
-                 case R.id.iv_more:
-                     Toast.makeText(StockActivity.this, "click " + data.pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT).show();
-                     break;
-             }
-         }
+          @Override
+          public void onHeaderClick(View view, int id, int position) {
+              switch (id) {
+                  case R.id.fl:
+                       // case OnItemTouchListener.HEADER_ID:
+                       Toast.makeText(StockActivity.this, "click, tag: " + mAdapter.getData().get(position).pinnedHeaderName, Toast.LENGTH_SHORT).show();
+                       break;
+                   case R.id.iv_more:
+                       Toast.makeText(StockActivity.this, "click " + mAdapter.getData().get(position).pinnedHeaderName + "'s more button", Toast.LENGTH_SHORT)
+                             .show();
+                       break;
+                   case R.id.checkbox:
+                       final CheckBox checkBox = (CheckBox) view;
+                       checkBox.setChecked(!checkBox.isChecked());
+                       // 刷新ItemDecorations，导致重绘刷新头部
+                       mRecyclerView.invalidateItemDecorations();
 
-     };
+                       mAdapter.getData().get(position).check = checkBox.isChecked();
+                       mAdapter.notifyItemChanged(position + mHeaderItemDecoration.getDataPositionOffset());
+
+                       break;
+               }
+           }
+
+       };
 
      mRecyclerView.addItemDecoration(
-             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>()
+             // 设置粘性标签对应的类型
+             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>(StockEntity.StockInfo.TYPE_HEADER)
              // 设置分隔线资源ID
              .setDividerId(R.drawable.divider)
              // 开启绘制分隔线，默认关闭
@@ -147,20 +147,20 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 ![布局B](/pic/small_pinned_header.png) 
 
 布局B就相当于在原来A的基础上放上个小标签，然后实现小粘性标签RecyclerView只需要添加一个SmallPinnedHeaderItemDecoration，只支持使用创建者模式创建，注意标签不能设置marginTop，
-因为往上滚动遮不住真正的标签「[供参考的SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java)」
+因为往上滚动遮不住真正的标签「[供参考的SecondActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FSecondActivity.java#L114-L126)」
 ```
-    OnHeaderClickAdapter<PinnedHeaderEntity<Integer>> headerClickAdapter = new OnHeaderClickAdapter<PinnedHeaderEntity<Integer>>() {
+     OnHeaderClickAdapter headerClickAdapter = new OnHeaderClickAdapter() {
 
-        @Override
-        public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {
-            if (id == R.id.iv_small_pinned_header) {
-                Toast.makeText(SecondActivity.this, "click tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-            }
-        }
+          @Override
+          public void onHeaderClick(View view, int id, int position) {
+              if (id == R.id.iv_small_pinned_header) {
+                  Toast.makeText(SecondActivity.this, "click tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+              }
+          }
      };
      mRecyclerView.addItemDecoration(
-             // 构造方法需要传入小标签的ID
-             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header)
+             // 构造方法需要传入小标签的ID和粘性标签对应的类型
+             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
              // 开启绘制分隔线，默认关闭
              .enableDivider(true)
              // 设置分隔线资源ID
@@ -175,10 +175,6 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
              .create());
     
 ```
-
-## 后续
-- 解决不能设置marginTop的问题
-- 解决设置marginBottom位置不对的问题
 
 #### License
 ```

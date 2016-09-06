@@ -28,7 +28,6 @@ import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListene
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private int[] mCats = {R.mipmap.cat0, R.mipmap.cat1, R.mipmap.cat2, R.mipmap.cat3, R.mipmap.cat4, R.mipmap.cat5, R.mipmap.cat6, R.mipmap.cat7, R.mipmap.cat8};
     private int[] mRabbits = {R.mipmap.rabbit0, R.mipmap.rabbit1, R.mipmap.rabbit2, R.mipmap.rabbit3, R.mipmap.rabbit4, R.mipmap.rabbit5, R.mipmap.rabbit6, R.mipmap.rabbit7, R.mipmap.rabbit8};
     private int[] mPandas = {R.mipmap.panda0, R.mipmap.panda1, R.mipmap.panda2, R.mipmap.panda3, R.mipmap.panda4, R.mipmap.panda5, R.mipmap.panda6, R.mipmap.panda7, R.mipmap.panda8};
-
-    private Random mRandom = new Random();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,23 +131,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        OnHeaderClickListener<PinnedHeaderEntity<Integer>> headerClickListener = new OnHeaderClickListener<PinnedHeaderEntity<Integer>>() {
+        OnHeaderClickListener headerClickListener = new OnHeaderClickListener() {
             @Override
-            public void onHeaderClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
-                Toast.makeText(MainActivity.this, "click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            public void onHeaderClick(View view, int id, int position) {
+                Toast.makeText(MainActivity.this, "click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderLongClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
-                Toast.makeText(MainActivity.this, "long click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            public void onHeaderLongClick(View view, int id, int position) {
+                Toast.makeText(MainActivity.this, "long click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             @Override
-            public void onHeaderDoubleClick(View view, int id, int position, PinnedHeaderEntity<Integer> data) {
-                Toast.makeText(MainActivity.this, "double click, tag: " + data.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            public void onHeaderDoubleClick(View view, int id, int position) {
+                Toast.makeText(MainActivity.this, "double click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
         };
-        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>().setDividerId(R.drawable.divider).enableDivider(true)
+        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder(BaseHeaderAdapter.TYPE_HEADER).setDividerId(R.drawable.divider).enableDivider(true)
                 .setHeaderClickListener(headerClickListener).create());
 
         mRecyclerView.setAdapter(mAdapter);
