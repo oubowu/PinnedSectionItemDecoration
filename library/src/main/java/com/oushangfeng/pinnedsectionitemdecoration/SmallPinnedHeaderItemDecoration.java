@@ -18,6 +18,9 @@ import com.oushangfeng.pinnedsectionitemdecoration.callback.PinnedHeaderNotifyer
 import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+
 /**
  * Created by Oubowu on 2016/7/21 15:38.
  * <p>
@@ -249,7 +252,18 @@ public class SmallPinnedHeaderItemDecoration<T> extends RecyclerView.ItemDecorat
 
             if (mItemTouchListener == null) {
                 mItemTouchListener = new OnItemTouchListener<T>(parent.getContext());
-                parent.addOnItemTouchListener(mItemTouchListener);
+                try {
+                    final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
+                    field.setAccessible(true);
+                    final ArrayList<OnItemTouchListener> touchListeners = (ArrayList<OnItemTouchListener>) field.get(parent);
+                    touchListeners.add(0, mItemTouchListener);
+                } catch (NoSuchFieldException e) {
+                    e.printStackTrace();
+                    parent.addOnItemTouchListener(mItemTouchListener);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    parent.addOnItemTouchListener(mItemTouchListener);
+                }
                 if (mHeaderClickListener != null) {
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                     mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
