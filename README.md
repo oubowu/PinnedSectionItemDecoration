@@ -15,7 +15,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 ![股市Demo](/pic/stock_demo.gif) 
 
 ## Extension library
-[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(It is highly recommended to use this adapter, which can greatly reduce the amount of work.)
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(It is highly recommended to use this adapter, which can greatly reduce the amount of work. The current demo is using v2.1.0.)
 
 ## How to use?
 
@@ -35,7 +35,7 @@ Adapter needs to process the span count of header through the FullSpanUtil.
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_DATA);
+        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_HEADER);
     }
 ```
 
@@ -57,7 +57,7 @@ To achieve large pinned section header, RecyclerView only need to add a PinnedHe
                    case R.id.checkbox:
                        final CheckBox checkBox = (CheckBox) view;
                        checkBox.setChecked(!checkBox.isChecked());
-                       // 刷新ItemDecorations，导致重绘刷新头部
+                       // invalidate ItemDecorations to draw the header
                        mRecyclerView.invalidateItemDecorations();
 
                        mAdapter.getData().get(position).check = checkBox.isChecked();
@@ -71,7 +71,7 @@ To achieve large pinned section header, RecyclerView only need to add a PinnedHe
 
      mRecyclerView.addItemDecoration(
              // Set the type of pinned header
-             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>(StockEntity.StockInfo.TYPE_HEADER)
+             new PinnedHeaderItemDecoration.Builder(StockEntity.StockInfo.TYPE_HEADER)
              // Set separator line resources id.
              .setDividerId(R.drawable.divider)
              // Enable draw the separator line, by default it's disable.
@@ -158,7 +158,7 @@ The layout B add a header compare whit layout A，then RecyclerView only need to
      };
      mRecyclerView.addItemDecoration(
              // Constructor need to set the id and type of the header 
-             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
+             new SmallPinnedHeaderItemDecoration.Builder(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
              // Enable draw the separator line, by default it's disable.
              .enableDivider(true)
              // Set separator line resources id.

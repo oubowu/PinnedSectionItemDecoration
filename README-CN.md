@@ -15,7 +15,7 @@
 ![股市Demo](/pic/stock_demo.gif) 
 
 ## 扩展库
-[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。)
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。当前demo使用的是v2.1.0。)
 
 ## 它能做什么？
 
@@ -35,7 +35,7 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
     @Override
     public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
         super.onViewAttachedToWindow(holder);
-        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_DATA);
+        FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_HEADER);
     }
 ```
 
@@ -72,7 +72,7 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
 
      mRecyclerView.addItemDecoration(
              // 设置粘性标签对应的类型
-             new PinnedHeaderItemDecoration.Builder<StockEntity.StockInfo>(StockEntity.StockInfo.TYPE_HEADER)
+             new PinnedHeaderItemDecoration.Builder(StockEntity.StockInfo.TYPE_HEADER)
              // 设置分隔线资源ID
              .setDividerId(R.drawable.divider)
              // 开启绘制分隔线，默认关闭
@@ -160,7 +160,7 @@ Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的�
      };
      mRecyclerView.addItemDecoration(
              // 构造方法需要传入小标签的ID和粘性标签对应的类型
-             new SmallPinnedHeaderItemDecoration.Builder<PinnedHeaderEntity<Integer>>(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
+             new SmallPinnedHeaderItemDecoration.Builder(R.id.tv_small_pinned_header,BaseHeaderAdapter.TYPE_HEADER)
              // 开启绘制分隔线，默认关闭
              .enableDivider(true)
              // 设置分隔线资源ID
