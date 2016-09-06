@@ -21,10 +21,12 @@ public class StockEntity {
     // 涨幅榜
     public List<StockInfo> increase_list;
 
-    public static class StockInfo extends MultiItemEntity {
+    public static class StockInfo implements MultiItemEntity {
 
         public static final int TYPE_HEADER = 1;
         public static final int TYPE_DATA = 2;
+
+        private int itemType;
 
         public String pinnedHeaderName;
 
@@ -40,6 +42,15 @@ public class StockEntity {
         public StockInfo(int itemType, String pinnedHeaderName) {
             this(itemType);
             this.pinnedHeaderName = pinnedHeaderName;
+        }
+
+        @Override
+        public int getItemType() {
+            return itemType;
+        }
+
+        public void setItemType(int itemType) {
+            this.itemType = itemType;
         }
     }
 

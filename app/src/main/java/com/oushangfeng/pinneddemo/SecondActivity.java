@@ -12,6 +12,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.oushangfeng.pinneddemo.adapter.BaseHeaderAdapter;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinnedsectionitemdecoration.SmallPinnedHeaderItemDecoration;
@@ -78,15 +79,19 @@ public class SecondActivity extends AppCompatActivity {
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_small_pinned_header));
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
 
-                        holder.setOnClickListener(R.id.iv_small_pinned_header, new OnItemChildClickListener());
-                        holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+                        // holder.setOnClickListener(R.id.iv_small_pinned_header, new OnItemChildClickListener());
+                        // holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+
+                        holder.addOnClickListener(R.id.iv_small_pinned_header).addOnClickListener(R.id.iv_animal);
 
                         break;
                     case BaseHeaderAdapter.TYPE_DATA:
                         holder.setText(R.id.tv_pos, holder.getLayoutPosition() + "");
                         Glide.with(SecondActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
 
-                        holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+                        // holder.setOnClickListener(R.id.iv_animal, new OnItemChildClickListener());
+
+                        holder.addOnClickListener(R.id.iv_animal);
 
                         break;
                 }
@@ -103,10 +108,25 @@ public class SecondActivity extends AppCompatActivity {
             }
         };
 
-        mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
+        /*mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
             @Override
             public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
                 PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getItem(i);
+                switch (view.getId()) {
+                    case R.id.iv_small_pinned_header:
+                        Toast.makeText(SecondActivity.this, "click tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.iv_animal:
+                        Toast.makeText(SecondActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });*/
+
+        mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
+            @Override
+            public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                PinnedHeaderEntity<Integer> entity = mAdapter.getItem(i);
                 switch (view.getId()) {
                     case R.id.iv_small_pinned_header:
                         Toast.makeText(SecondActivity.this, "click tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();

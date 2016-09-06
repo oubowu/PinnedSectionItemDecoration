@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.oushangfeng.pinneddemo.adapter.BaseHeaderAdapter;
 import com.oushangfeng.pinneddemo.entitiy.PinnedHeaderEntity;
 import com.oushangfeng.pinnedsectionitemdecoration.PinnedHeaderItemDecoration;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (holder.getItemViewType()) {
                     case BaseHeaderAdapter.TYPE_HEADER:
                         holder.setText(R.id.tv_animal, item.getPinnedHeaderName());
-                        holder.setOnClickListener(R.id.tv_animal, new OnItemChildClickListener());
+                        // holder.setOnClickListener(R.id.tv_animal, new OnItemChildClickListener());
                         break;
                     case BaseHeaderAdapter.TYPE_DATA:
 
@@ -123,31 +124,31 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public PinnedHeaderEntity<Integer> getPinnedHeaderInfo(int position) {
                 if (getData() != null && getData().size() > 0) {
-                    return (PinnedHeaderEntity<Integer>) getData().get(position);
-                } else {
-                    return null;
+                    return getData().get(position);
                 }
+                return null;
             }
         };
 
-        mAdapter.setOnRecyclerViewItemClickListener(new BaseQuickAdapter.OnRecyclerViewItemClickListener() {
-            @Override
-            public void onItemClick(View view, int i) {
-                final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
-                Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        mAdapter.setOnRecyclerViewItemChildClickListener(new BaseQuickAdapter.OnRecyclerViewItemChildClickListener() {
-            @Override
-            public void onItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
-                final PinnedHeaderEntity<Integer> entity = (PinnedHeaderEntity<Integer>) mAdapter.getData().get(i);
-                Toast.makeText(MainActivity.this, "click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-            }
-        });
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
+            @Override
+            public void SimpleOnItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                switch (mAdapter.getItemViewType(i)) {
+                    case BaseHeaderAdapter.TYPE_DATA:
+                        PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
+                        Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        break;
+                    case BaseHeaderAdapter.TYPE_HEADER:
+                        entity = mAdapter.getData().get(i);
+                        Toast.makeText(MainActivity.this, "click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
         OnHeaderClickListener<PinnedHeaderEntity<Integer>> headerClickListener = new OnHeaderClickListener<PinnedHeaderEntity<Integer>>() {
             @Override
             public void onHeaderClick(int id, int position, PinnedHeaderEntity<Integer> data) {

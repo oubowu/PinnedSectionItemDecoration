@@ -7,7 +7,9 @@ import com.chad.library.adapter.base.entity.MultiItemEntity;
  * <p>
  * 实体类，可以将自己想要填充的数据包装进去，同时附带这个数据对应的类型
  */
-public class PinnedHeaderEntity<T> extends MultiItemEntity{
+public class PinnedHeaderEntity<T> implements MultiItemEntity{
+
+    private final int itemType;
 
     private T data;
 
@@ -33,5 +35,10 @@ public class PinnedHeaderEntity<T> extends MultiItemEntity{
 
     public String getPinnedHeaderName() {
         return pinnedHeaderName;
+    }
+
+    @Override
+    public int getItemType() {
+        return itemType;
     }
 }
