@@ -372,8 +372,10 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        mItemTouchListener.setClickBounds(mClickId,
-                                new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
+                        if (view != null) {
+                            mItemTouchListener.setClickBounds(mClickId, new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(),
+                                    view.getTop() + view.getMeasuredHeight()));
+                        }
                     }
                 }
                 mItemTouchListener.setClickHeaderInfo(mPinnedHeaderPosition - mDataPositionOffset);
@@ -383,12 +385,12 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     }
 
-    public void setDataPositionOffset(int offset) {
-        mDataPositionOffset = offset;
-    }
-
     public int getDataPositionOffset() {
         return mDataPositionOffset;
+    }
+
+    public void setDataPositionOffset(int offset) {
+        mDataPositionOffset = offset;
     }
 
     /**

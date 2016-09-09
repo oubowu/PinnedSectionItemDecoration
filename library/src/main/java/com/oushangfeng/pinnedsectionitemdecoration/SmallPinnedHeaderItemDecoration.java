@@ -27,46 +27,33 @@ import java.util.ArrayList;
  */
 public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
+    // 取出Adapter
+    RecyclerView.Adapter mAdapter = null;
     // 标签的id值
     private int mPinnedHeaderId;
-
     private OnHeaderClickListener mHeaderClickListener;
-
     private int[] mClickIds;
-
     private int mDividerId;
-
     private boolean mEnableDivider;
-
     private boolean mDisableHeaderClick;
-
     private Drawable mDrawable;
-
     // 标签父布局的左间距
     private int mParentPaddingLeft;
-
     // RecyclerView的左间距
     private int mRecyclerViewPaddingLeft;
     // 标签父布局的顶间距
     private int mParentPaddingTop;
     // RecyclerView的顶间距
     private int mRecyclerViewPaddingTop;
-
     private int mHeaderLeftMargin;
     private int mHeaderRightMargin;
     private int mHeaderTopMargin;
     private int mHeaderBottomMargin;
-
     private OnItemTouchListener mItemTouchListener;
-
     private int mLeft;
     private int mTop;
     private int mRight;
     private int mBottom;
-
-    // 取出Adapter
-    RecyclerView.Adapter mAdapter = null;
-
     private View mPinnedHeaderParentView;
 
     // 缓存某个标签
@@ -280,8 +267,10 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        mItemTouchListener.setClickBounds(mClickId,
-                                new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
+                        if (view != null) {
+                            mItemTouchListener.setClickBounds(mClickId, new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(),
+                                    view.getTop() + view.getMeasuredHeight()));
+                        }
                     }
                 }
                 mItemTouchListener.setClickHeaderInfo(mHeaderPosition - mDataPositionOffset);
@@ -471,16 +460,11 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
 
     public static class Builder {
 
-        private OnHeaderClickListener headerClickListener;
-
-        private int dividerId;
-
-        private int pinnedHeaderId;
-
-        private boolean enableDivider;
-
         public boolean disableHeaderClick;
-
+        private OnHeaderClickListener headerClickListener;
+        private int dividerId;
+        private int pinnedHeaderId;
+        private boolean enableDivider;
         private int[] clickIds;
 
         private int pinnedHeaderType;

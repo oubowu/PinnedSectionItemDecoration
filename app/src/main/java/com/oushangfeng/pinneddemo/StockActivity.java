@@ -123,7 +123,7 @@ public class StockActivity extends AppCompatActivity {
                 }
 
                 mAdapter = new StockAdapter(data);
-                mRecyclerView.setAdapter(mAdapter);
+                mRecyclerView.setAdapter(null);
 
                 mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
                     @Override
