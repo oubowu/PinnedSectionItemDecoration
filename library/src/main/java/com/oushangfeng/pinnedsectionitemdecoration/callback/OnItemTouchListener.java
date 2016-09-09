@@ -114,107 +114,6 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
         mDisableHeaderClick = disableHeaderClick;
     }
 
-    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
-
-        private boolean mDoubleTap;
-
-        @Override
-        public boolean onDown(MotionEvent e) {
-
-            // Log.e("TAG", "GestureListener-78行-onDown(): ");
-
-            // 记录手指触碰，是否在头部范围内
-            float downX = e.getX();
-            float downY = e.getY();
-            final ClickBounds bounds = mBoundsArray.valueAt(0);
-            mDownInside = downX >= bounds.getLeft() && downX <= bounds.getRight() && downY >= bounds.getTop() && downY <= bounds.getBottom();
-
-            if (!mDoubleTap) {
-                mIntercept = false;
-            } else {
-                // 因为双击会在onDoubleTap后再调用onDown，所以这里要忽略第二次防止mIntercept被影响
-                mDoubleTap = false;
-            }
-            return super.onDown(e);
-        }
-
-        @Override
-        public void onLongPress(MotionEvent e) {
-            // Log.e("TAG", "GestureListener-76行-onLongPress(): ");
-            shouldIntercept(e);
-
-            if (mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
-                // 自己处理点击标签事件
-                if ((mTmpClickId == HEADER_ID && !mDisableHeaderClick) || mTmpClickId != HEADER_ID) {
-                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
-                    try {
-                        mHeaderClickListener.onHeaderLongClick(mTmpView, mTmpClickId, mPosition);
-                    } catch (IndexOutOfBoundsException e1) {
-                        e1.printStackTrace();
-                        Log.e("TAG", "GestureListener-156行-onLongPress(): " + e1);
-                    }
-                }
-            }
-
-        }
-
-        @Override
-        public boolean onSingleTapUp(MotionEvent e) {
-            // Log.e("TAG", "GestureListener-81行-onSingleTapUp(): ");
-            shouldIntercept(e);
-
-            return mIntercept;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            // Log.e("TAG", "GestureListener-113行-onSingleTapConfirmed(): ");
-
-            if (mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
-                // 自己处理点击标签事件
-                if ((mTmpClickId == HEADER_ID && !mDisableHeaderClick) || mTmpClickId != HEADER_ID) {
-                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
-                    try {
-                        mHeaderClickListener.onHeaderClick(mTmpView, mTmpClickId, mPosition);
-                    } catch (IndexOutOfBoundsException e1) {
-                        e1.printStackTrace();
-                        Log.e("TAG", "GestureListener-183行-onSingleTapConfirmed(): " + e1);
-                    }
-                }
-            }
-
-            return super.onSingleTapConfirmed(e);
-        }
-
-        @Override
-        public boolean onDoubleTap(MotionEvent e) {
-
-            // Log.e("TAG", "GestureListener-89行-onDoubleTap(): ");
-
-            mDoubleTap = true;
-            shouldIntercept(e);
-
-            if (mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
-                // 自己处理点击标签事件
-                if ((mTmpClickId == HEADER_ID && !mDisableHeaderClick) || mTmpClickId != HEADER_ID) {
-                    // 如果点击的是标签整体并且没有禁掉标签整体点击响应，或者点击的是标签里面的某一个子控件，回调事件
-                    try {
-                        mHeaderClickListener.onHeaderDoubleClick(mTmpView, mTmpClickId, mPosition);
-                    } catch (IndexOutOfBoundsException e1) {
-                        e1.printStackTrace();
-                        Log.e("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
-                    }
-                }
-            }
-
-            // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理
-            mGestureDetector.setIsLongpressEnabled(false);
-
-            return mIntercept;
-        }
-
-    }
-
     private void shouldIntercept(MotionEvent e) {
         float downX = e.getX();
         float downY = e.getY();
@@ -248,6 +147,98 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
         }
 
         // Log.e("TAG", "OnRecyclerItemTouchListener-110行-judge(): " + (mIntercept ? "屏蔽" : "不屏蔽"));
+
+    }
+
+    private class GestureListener extends GestureDetector.SimpleOnGestureListener {
+
+        private boolean mDoubleTap;
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+
+            // Log.e("TAG", "GestureListener-78行-onDown(): ");
+
+            // 记录手指触碰，是否在头部范围内
+            float downX = e.getX();
+            float downY = e.getY();
+            final ClickBounds bounds = mBoundsArray.valueAt(0);
+            mDownInside = downX >= bounds.getLeft() && downX <= bounds.getRight() && downY >= bounds.getTop() && downY <= bounds.getBottom();
+
+            if (!mDoubleTap) {
+                mIntercept = false;
+            } else {
+                // 因为双击会在onDoubleTap后再调用onDown，所以这里要忽略第二次防止mIntercept被影响
+                mDoubleTap = false;
+            }
+            return super.onDown(e);
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            // Log.e("TAG", "GestureListener-76行-onLongPress(): ");
+            shouldIntercept(e);
+
+            if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
+                // 自己处理点击标签事件
+                try {
+                    mHeaderClickListener.onHeaderLongClick(mTmpView, mTmpClickId, mPosition);
+                } catch (IndexOutOfBoundsException e1) {
+                    e1.printStackTrace();
+                    Log.e("TAG", "GestureListener-156行-onLongPress(): " + e1);
+                }
+            }
+
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            // Log.e("TAG", "GestureListener-81行-onSingleTapUp(): ");
+            shouldIntercept(e);
+
+            return mIntercept;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            // Log.e("TAG", "GestureListener-113行-onSingleTapConfirmed(): ");
+
+            if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
+                // 自己处理点击标签事件
+                try {
+                    mHeaderClickListener.onHeaderClick(mTmpView, mTmpClickId, mPosition);
+                } catch (IndexOutOfBoundsException e1) {
+                    e1.printStackTrace();
+                    Log.e("TAG", "GestureListener-183行-onSingleTapConfirmed(): " + e1);
+                }
+            }
+
+            return super.onSingleTapConfirmed(e);
+        }
+
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+
+            // Log.e("TAG", "GestureListener-89行-onDoubleTap(): ");
+
+            mDoubleTap = true;
+            shouldIntercept(e);
+
+            if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
+                // 自己处理点击标签事件
+                try {
+                    mHeaderClickListener.onHeaderDoubleClick(mTmpView, mTmpClickId, mPosition);
+                } catch (IndexOutOfBoundsException e1) {
+                    e1.printStackTrace();
+                    Log.e("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
+                }
+            }
+
+            // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理
+            mGestureDetector.setIsLongpressEnabled(false);
+
+            return mIntercept;
+        }
 
     }
 

@@ -481,7 +481,7 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
         }
 
         /**
-         * 设置标签监听，若设置点击监听不为null，并且开启标签的点击监听，那么标签的点击回调返回的id为ItemTouchListener.HEADER_ID
+         * 设置标签和其内部的子控件的监听，若设置点击监听不为null，但是disableHeaderClick(true)的话，还是不会响应点击事件
          *
          * @param headerClickListener 监听，若不设置这个setClickIds无效
          * @return 构建者
@@ -525,7 +525,7 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
         }
 
         /**
-         * 开启或关闭标签点击事件(不包括标签里面的子控件)，默认开启，当setHeaderClickListener不为null时有效
+         * 是否关闭标签点击事件，默认开启
          *
          * @param disableHeaderClick true为关闭标签点击事件，false为开启标签点击事件
          * @return 构建者

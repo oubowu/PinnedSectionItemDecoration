@@ -79,7 +79,7 @@ public class StockActivity extends AppCompatActivity {
                 };
 
                 mHeaderItemDecoration = new PinnedHeaderItemDecoration.Builder(StockEntity.StockInfo.TYPE_HEADER).setDividerId(R.drawable.divider).enableDivider(true)
-                        .setClickIds(R.id.iv_more, R.id.fl, R.id.checkbox).disableHeaderClick(true).setHeaderClickListener(clickAdapter).create();
+                        .setClickIds(R.id.iv_more, R.id.fl, R.id.checkbox).disableHeaderClick(false).setHeaderClickListener(clickAdapter).create();
                 mRecyclerView.addItemDecoration(mHeaderItemDecoration);
 
             }
@@ -123,7 +123,7 @@ public class StockActivity extends AppCompatActivity {
                 }
 
                 mAdapter = new StockAdapter(data);
-                mRecyclerView.setAdapter(null);
+                mRecyclerView.setAdapter(mAdapter);
 
                 mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
                     @Override

@@ -21,7 +21,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.3'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.5'
 ```
 
 Adapter needs to process the span count of header through the FullSpanUtil.
@@ -78,9 +78,9 @@ To achieve large pinned section header, RecyclerView only need to add a PinnedHe
              .enableDivider(true)
              // Set click event for the header and its internal child view.
              .setClickIds(R.id.iv_more)
-             // Enable header click event(not include the child view)， by default it's enable.
+             // Disable header click event， by default it's enable.
              .disableHeaderClick(false)
-             // Set the listener. If the listener is not null and enable the header click event, then the callback return the header's id is ItemTouchListener.HEADER_ID.
+             // Set the listener. If the listener is not null but disable the header click event(eg. disableHeaderClick(true)), then the callback don't return.
              .setHeaderClickListener(clickAdapter)
              .create());
     
@@ -163,13 +163,12 @@ The layout B add a header compare whit layout A，then RecyclerView only need to
              .enableDivider(true)
              // Set separator line resources id.
              .setDividerId(R.drawable.divider)
-             // Disable header click event(not include the child view)， by default it's enable.
-             .disableHeaderClick(true)
              // Set click event for the header and its internal child view.
-             // Here I disable header click event, but i set the header id, so the header click event will still happen.
              .setClickIds(R.id.tv_small_pinned_header)
-             // Set the listener. If the listener is not null and enable the header click event, then the callback return the header's id is ItemTouchListener.HEADER_ID.
-             .setHeaderClickListener(headerClickAdapter)
+             // Disable header click event， by default it's enable.
+             .disableHeaderClick(false)
+             // Set the listener. If the listener is not null but disable the header click event(eg. disableHeaderClick(true)), then the callback don't return.
+             .setHeaderClickListener(clickAdapter)
              .create());
     
 ```
