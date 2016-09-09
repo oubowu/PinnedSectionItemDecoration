@@ -5,7 +5,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 - Small pinned section header support vertical orientation of the LinearLayoutManager and GridLayoutManager which its span count is 1.
 - Support the header of the click, double click and long press event.
 - Support the child view of the click, double click and long press event.
-- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 92-108 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L92-L108)」)
+- It can draw the separator line and support custom separator line style. (PS: Vertical staggeredgrid layout requires fixed height, can not be randomly changed to lead to item position switch, refer to「[See line 89-108 of MainActivity](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L89-L108)」)
 
 ## Screenshot
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -21,7 +21,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.1'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.2'
 ```
 
 Adapter needs to process the span count of header through the FullSpanUtil.

@@ -5,7 +5,7 @@
 - 小粘性标签支持垂直方向的线性和网格一行只有一列网格布局管理器
 - 支持标签的单击、双击和长按事件
 - 支持标签内部子控件的单击、双击和长按事件
-- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 92-108行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L92-L108)」)
+- 可以绘制线性、网格、瀑布流布局的分隔线，支持自定义分割线样式(PS:垂直瀑布流布局需要Item高度固定，不能随机变化导致Item位置切换，可参考「[MainActivity 89-108行](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/app%2Fsrc%2Fmain%2Fjava%2Fcom%2Foushangfeng%2Fpinneddemo%2FMainActivity.java#L89-L108)」)
 
 ## 效果图
 ![大标签线性布局](/pic/big_header_linearlayout.gif) 
@@ -21,7 +21,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.1'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.2'
 ```
 
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理

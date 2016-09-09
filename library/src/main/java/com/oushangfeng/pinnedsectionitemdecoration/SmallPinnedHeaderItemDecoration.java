@@ -272,14 +272,15 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                     mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
                 }
+                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
             }
             if (mHeaderClickListener != null) {
                 // -1代表是标签的Id
-                mItemTouchListener.addViewAndBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
+                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        mItemTouchListener.addViewAndBounds(mClickId,
+                        mItemTouchListener.setClickBounds(mClickId,
                                 new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight()));
                     }
                 }
@@ -457,12 +458,6 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
             mPinnedHeaderView = null;
             mHeaderPosition = -1;
             mAdapter = adapter;
-            /*if (adapter instanceof PinnedHeaderNotifyer) {
-                // 明确了适配器必须继承PinnedHeaderAdapter接口，因为没有这个就获取不到RecyclerView哪个是标签
-                mAdapter = adapter;
-            } else {
-                throw new IllegalStateException("Adapter must implements " + PinnedHeaderNotifyer.class.getSimpleName());
-            }*/
         }
     }
 

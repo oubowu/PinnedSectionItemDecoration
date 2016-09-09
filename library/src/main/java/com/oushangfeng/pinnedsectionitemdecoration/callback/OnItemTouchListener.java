@@ -55,7 +55,7 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
      * @param id     View的ID
      * @param bounds 点击范围
      */
-    public void addViewAndBounds(int id, ClickBounds bounds) {
+    public void setClickBounds(int id, ClickBounds bounds) {
         mBoundsArray.put(id, bounds);
     }
 
