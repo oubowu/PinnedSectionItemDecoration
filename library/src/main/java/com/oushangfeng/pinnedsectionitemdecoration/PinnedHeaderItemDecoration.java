@@ -77,6 +77,10 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mPinnedHeaderType;
 
+    private boolean mDisableDrawHeader;
+
+    private RecyclerView mParent;
+
     // 当我们调用mRecyclerView.addItemDecoration()方法添加decoration的时候，RecyclerView在绘制的时候，去会绘制decorator，即调用该类的onDraw和onDrawOver方法，
     // 1.onDraw方法先于drawChildren
     // 2.onDrawOver在drawChildren之后，一般我们选择复写其中一个即可。
@@ -142,7 +146,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
         // 检测到标签存在的时候，将标签强制固定在顶部
         createPinnedHeader(parent);
 
-        if (mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
+        if (!mDisableDrawHeader && mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
 
             mClipBounds = c.getClipBounds();
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
@@ -225,7 +229,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
     @Override
     public void onDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state) {
 
-        if (mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
+        if (!mDisableDrawHeader && mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
             c.save();
 
             mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
@@ -451,6 +455,11 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
      * @param parent
      */
     private void checkCache(final RecyclerView parent) {
+
+        if (mParent != parent) {
+            mParent = parent;
+        }
+
         final RecyclerView.Adapter adapter = parent.getAdapter();
         if (mAdapter != adapter) {
             // 适配器为null或者不同，清空缓存
@@ -498,6 +507,27 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
     public int getPinnedHeaderPosition() {
         return mPinnedHeaderPosition;
+    }
+
+    /**
+     * 是否禁止绘制粘性头部
+     *
+     * @return true的话不绘制头部
+     */
+    public boolean isDisableDrawHeader() {
+        return mDisableDrawHeader;
+    }
+
+    /**
+     * 禁止绘制粘性头部
+     *
+     * @param disableDrawHeader true的话不绘制头部，默认false绘制头部
+     */
+    public void disableDrawHeader(boolean disableDrawHeader) {
+        mDisableDrawHeader = disableDrawHeader;
+        if (mParent != null) {
+            mParent.invalidateItemDecorations();
+        }
     }
 
     public static class Builder {
