@@ -456,6 +456,43 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
             mPinnedHeaderView = null;
             mHeaderPosition = -1;
             mAdapter = adapter;
+            mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+                @Override
+                public void onChanged() {
+                    super.onChanged();
+                    mHeaderPosition = -1;
+                }
+
+                @Override
+                public void onItemRangeChanged(int positionStart, int itemCount) {
+                    super.onItemRangeChanged(positionStart, itemCount);
+                    mHeaderPosition = -1;
+                }
+
+                @Override
+                public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
+                    super.onItemRangeChanged(positionStart, itemCount, payload);
+                    mHeaderPosition = -1;
+                }
+
+                @Override
+                public void onItemRangeInserted(int positionStart, int itemCount) {
+                    super.onItemRangeInserted(positionStart, itemCount);
+                    mHeaderPosition = -1;
+                }
+
+                @Override
+                public void onItemRangeRemoved(int positionStart, int itemCount) {
+                    super.onItemRangeRemoved(positionStart, itemCount);
+                    mHeaderPosition = -1;
+                }
+
+                @Override
+                public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
+                    super.onItemRangeMoved(fromPosition, toPosition, itemCount);
+                    mHeaderPosition = -1;
+                }
+            });
         }
     }
 
