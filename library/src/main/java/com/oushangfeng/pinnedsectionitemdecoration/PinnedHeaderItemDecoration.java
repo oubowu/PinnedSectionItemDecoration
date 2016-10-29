@@ -470,40 +470,45 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                 @Override
                 public void onChanged() {
                     super.onChanged();
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
 
                 @Override
                 public void onItemRangeChanged(int positionStart, int itemCount) {
                     super.onItemRangeChanged(positionStart, itemCount);
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
 
                 @Override
                 public void onItemRangeChanged(int positionStart, int itemCount, Object payload) {
                     super.onItemRangeChanged(positionStart, itemCount, payload);
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
 
                 @Override
                 public void onItemRangeInserted(int positionStart, int itemCount) {
                     super.onItemRangeInserted(positionStart, itemCount);
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
 
                 @Override
                 public void onItemRangeRemoved(int positionStart, int itemCount) {
                     super.onItemRangeRemoved(positionStart, itemCount);
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
 
                 @Override
                 public void onItemRangeMoved(int fromPosition, int toPosition, int itemCount) {
                     super.onItemRangeMoved(fromPosition, toPosition, itemCount);
-                    mPinnedHeaderPosition = -1;
+                    reset();
                 }
             });
         }
+    }
+
+    private void reset() {
+        mPinnedHeaderPosition = -1;
+        mPinnedHeaderView = null;
     }
 
     /**

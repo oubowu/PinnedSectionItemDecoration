@@ -21,7 +21,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.3.7'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.4'
 ```
 
 Adapter needs to process the span count of header through the FullSpanUtil.
