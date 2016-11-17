@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnHeaderClickListener;
 import com.oushangfeng.pinnedsectionitemdecoration.callback.OnItemTouchListener;
-import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
 import java.lang.reflect.Field;
@@ -342,12 +341,12 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             mPinnedHeaderView.measure(widthSpec, heightSpec);
 
             mLeft = mRecyclerViewPaddingLeft + mHeaderLeftMargin;
+            mRight = mPinnedHeaderView.getMeasuredWidth() + mLeft;
             mTop = mRecyclerViewPaddingTop + mHeaderTopMargin;
-            mRight = mPinnedHeaderView.getMeasuredWidth() + mRecyclerViewPaddingLeft + mHeaderLeftMargin + mHeaderRightMargin;
-            mBottom = mPinnedHeaderView.getMeasuredHeight() + mRecyclerViewPaddingTop + mHeaderTopMargin + mHeaderBottomMargin;
+            mBottom = mPinnedHeaderView.getMeasuredHeight() + mTop;
 
             // 位置强制布局在顶部
-            mPinnedHeaderView.layout(mLeft, mTop, mRight - mHeaderRightMargin, mBottom - mHeaderBottomMargin);
+            mPinnedHeaderView.layout(mLeft, mTop, mRight, mBottom);
 
             if (mItemTouchListener == null) {
                 mItemTouchListener = new OnItemTouchListener(parent.getContext());
@@ -367,18 +366,17 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                     mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
                     mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
                 }
-                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
+                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, mPinnedHeaderView);
             }
 
             if (mHeaderClickListener != null) {
                 // OnItemTouchListener.HEADER_ID代表是标签的Id
-                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, new ClickBounds(mPinnedHeaderView, mLeft, mTop, mRight, mBottom));
+                mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, mPinnedHeaderView);
                 if (mHeaderClickListener != null && mClickIds != null && mClickIds.length > 0) {
                     for (int mClickId : mClickIds) {
                         final View view = mPinnedHeaderView.findViewById(mClickId);
-                        if (view != null) {
-                            mItemTouchListener.setClickBounds(mClickId, new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(),
-                                    view.getTop() + view.getMeasuredHeight()));
+                        if (view != null && view.getVisibility() == View.VISIBLE) {
+                            mItemTouchListener.setClickBounds(mClickId, view);
                         }
                     }
                 }

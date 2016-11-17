@@ -35,6 +35,9 @@ public class ClickBounds {
         mTop = top;
         mRight = right;
         mBottom = bottom;
+
+        mFirstTop = top;
+        mFirstBottom = bottom;
     }
 
     public int getLeft() {

@@ -55,8 +55,26 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
      * @param id     View的ID
      * @param bounds 点击范围
      */
+    @Deprecated
     public void setClickBounds(int id, ClickBounds bounds) {
         mBoundsArray.put(id, bounds);
+    }
+
+    /**
+     * 设置对应的View的点击范围
+     *
+     * @param id   View的ID
+     * @param view 点击的View
+     */
+    public void setClickBounds(int id, View view) {
+        ClickBounds bounds;
+        if (mBoundsArray.get(id) == null) {
+            bounds = new ClickBounds(view, view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight());
+            mBoundsArray.put(id, bounds);
+        } else {
+            bounds = mBoundsArray.get(id);
+            bounds.setBounds(view.getLeft(), view.getTop(), view.getLeft() + view.getMeasuredWidth(), view.getTop() + view.getMeasuredHeight());
+        }
     }
 
     /**
@@ -209,7 +227,7 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
                     mHeaderClickListener.onHeaderClick(mTmpView, mTmpClickId, mPosition);
                 } catch (IndexOutOfBoundsException e1) {
                     e1.printStackTrace();
-                    Log.e("TAG", "GestureListener-183行-onSingleTapConfirmed(): " + e1);
+                    // Log.e("TAG", "GestureListener-183行-onSingleTapConfirmed(): " + e1);
                 }
             }
 
@@ -230,7 +248,7 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
                     mHeaderClickListener.onHeaderDoubleClick(mTmpView, mTmpClickId, mPosition);
                 } catch (IndexOutOfBoundsException e1) {
                     e1.printStackTrace();
-                    Log.e("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
+                    // Log.e("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
                 }
             }
 
