@@ -20,7 +20,7 @@ import java.util.List;
  * Created by Oubowu on 2016/8/3 14:43.
  * 直接继承BaseMultiItemQuickAdapter单独实现一个适配器的写法
  */
-public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInfo> {
+public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInfo, BaseViewHolder> {
 
     public StockAdapter(List<StockEntity.StockInfo> data) {
         super(data);
@@ -35,7 +35,7 @@ public class StockAdapter extends BaseMultiItemQuickAdapter<StockEntity.StockInf
     }
 
     @Override
-    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+    public void onViewAttachedToWindow(BaseViewHolder holder) {
         super.onViewAttachedToWindow(holder);
         FullSpanUtil.onViewAttachedToWindow(holder, this, StockEntity.StockInfo.TYPE_HEADER);
     }
