@@ -1,4 +1,4 @@
-# Pinned section header decoration for RecyclerView. 「[中文版文档点这里](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/README-CN.md)」
+# Pinned section header decoration for RecyclerView.([Please pay attention to a better project StickyItemDecoration](https://github.com/oubowu/StickyItemDecoration))「[中文版文档点这里](https://github.com/oubowu/PinnedSectionItemDecoration/blob/master/README-CN.md)」
 A powerful pinned section header library. The realization of ideas comes from「[pinned-section-item-decoration](https://github.com/takahr/pinned-section-item-decoration)」. Please mark a star if you think it's helpful.（＾∀＾）
 ##  Function  
 - Large pinned section header support vertical orientation of the LinearLayoutManager, GridLayoutManager and StaggeredGridLayoutManager.
