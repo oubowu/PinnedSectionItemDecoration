@@ -157,10 +157,12 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                 // 根据belowView相对顶部距离计算出缓存标签的位移
                 mPinnedHeaderOffset = belowView.getTop() - (mRecyclerViewPaddingTop + mPinnedHeaderView.getHeight() + mHeaderTopMargin);
                 // 锁定的矩形顶部为v.getTop(趋势是mPinnedHeaderView.getHeight()->0)
-                mClipBounds.top = belowView.getTop();
+                // mClipBounds.top = belowView.getTop();
+                mClipBounds.top = mRecyclerViewPaddingTop;
             } else {
                 mPinnedHeaderOffset = 0;
-                mClipBounds.top = mRecyclerViewPaddingTop + mPinnedHeaderView.getHeight();
+                // mClipBounds.top = mRecyclerViewPaddingTop + mPinnedHeaderView.getHeight()*0;
+                mClipBounds.top = mRecyclerViewPaddingTop;
             }
             // 锁定画布绘制范围，记为A
             c.clipRect(mClipBounds);

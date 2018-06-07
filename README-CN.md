@@ -1,4 +1,4 @@
-# RecyclerView粘性标签库（[请关注新写的一个更优秀的方案StickyItemDecoration](https://github.com/oubowu/StickyItemDecoration)）
+## RecyclerView粘性标签库（[请关注新写的一个更优秀的方案StickyItemDecoration](https://github.com/oubowu/StickyItemDecoration)）
 一个强大的粘性标签库，实现思路来源于「[pinned-section-item-decoration](https://github.com/takahr/pinned-section-item-decoration)」,感觉有用的话star个呗（＾∀＾）
 ## 功能
 - 大粘性标签支持垂直方向的线性、网格、瀑布流布局管理器
@@ -21,7 +21,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.4'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.5'
 ```
 
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理
