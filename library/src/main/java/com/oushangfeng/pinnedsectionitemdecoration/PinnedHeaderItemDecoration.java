@@ -240,7 +240,10 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             // REVERSE_DIFFERENCE，实际上就是求得的B和A的差集范围，即B－A，只有在此范围内的绘制内容才会被显示
             // 因此,只绘制(0,0,parent.getWidth(),belowView.getTop())这个范围，然后画布移动了mPinnedHeaderTop，所以刚好是绘制顶部标签移动的范围
             // 低版本不行，换回Region.Op.UNION并集
-            c.clipRect(mClipBounds, Region.Op.UNION);
+
+            // 解决编译版本28修改后的抛出异常：java.lang.IllegalArgumentException: Invalid Region.Op - only INTERSECT and DIFFERENCE are allowed
+            c.clipRect(mClipBounds, Region.Op.INTERSECT);
+
             c.translate(mRecyclerViewPaddingLeft + mHeaderLeftMargin, mPinnedHeaderOffset + mRecyclerViewPaddingTop + mHeaderTopMargin);
             mPinnedHeaderView.draw(c);
 
