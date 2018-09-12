@@ -233,7 +233,9 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
         if (!mDisableDrawHeader && mPinnedHeaderView != null && mFirstVisiblePosition >= mPinnedHeaderPosition) {
             c.save();
 
-            mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
+            if (mItemTouchListener != null) {
+                mItemTouchListener.invalidTopAndBottom(mPinnedHeaderOffset);
+            }
 
             mClipBounds.top = mRecyclerViewPaddingTop + mHeaderTopMargin;
             // 锁定画布绘制范围，记为B
@@ -353,7 +355,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             // 位置强制布局在顶部
             mPinnedHeaderView.layout(mLeft, mTop, mRight, mBottom);
 
-            if (mItemTouchListener == null) {
+            if (mItemTouchListener == null && mHeaderClickListener != null) {
                 mItemTouchListener = new OnItemTouchListener(parent.getContext());
                 try {
                     final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
@@ -367,10 +369,8 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                     e.printStackTrace();
                     parent.addOnItemTouchListener(mItemTouchListener);
                 }
-                if (mHeaderClickListener != null) {
-                    mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
-                    mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
-                }
+                mItemTouchListener.setHeaderClickListener(mHeaderClickListener);
+                mItemTouchListener.disableHeaderClick(mDisableHeaderClick);
                 mItemTouchListener.setClickBounds(OnItemTouchListener.HEADER_ID, mPinnedHeaderView);
             }
 

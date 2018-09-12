@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            protected void convert(BaseViewHolder holder, PinnedHeaderEntity<Integer> item) {
+            protected void convert(BaseViewHolder holder, final PinnedHeaderEntity<Integer> item) {
                 switch (holder.getItemViewType()) {
                     case BaseHeaderAdapter.TYPE_HEADER:
                         holder.setText(R.id.tv_animal, item.getPinnedHeaderName());
@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
-            public void SimpleOnItemClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+            public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int i) {
                 switch (mAdapter.getItemViewType(i)) {
                     case BaseHeaderAdapter.TYPE_DATA:
                         PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
@@ -129,6 +129,21 @@ public class MainActivity extends AppCompatActivity {
                         break;
                 }
             }
+
+            @Override
+            public void onItemLongClick(BaseQuickAdapter adapter, View view, int i) {
+                switch (mAdapter.getItemViewType(i)) {
+                    case BaseHeaderAdapter.TYPE_DATA:
+                        PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
+                        Toast.makeText(MainActivity.this, "item long click :"+entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        break;
+                    case BaseHeaderAdapter.TYPE_HEADER:
+                        entity = mAdapter.getData().get(i);
+                        Toast.makeText(MainActivity.this, "item long click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+
         });
 
         OnHeaderClickListener headerClickListener = new OnHeaderClickListener() {

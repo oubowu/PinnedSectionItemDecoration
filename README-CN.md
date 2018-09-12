@@ -21,7 +21,7 @@
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.6'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.2.7'
 ```
 
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理

@@ -1,5 +1,6 @@
 package com.oushangfeng.pinneddemo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.AssetManager;
 import android.os.AsyncTask;
@@ -34,6 +35,7 @@ public class StockActivity extends AppCompatActivity {
     private StockAdapter mAdapter;
     private PinnedHeaderItemDecoration mHeaderItemDecoration;
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,7 +129,7 @@ public class StockActivity extends AppCompatActivity {
 
                 mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
                     @Override
-                    public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+                    public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int i) {
                         if (view instanceof CheckBox) {
                             ((CheckBox) view).setChecked(!((CheckBox) view).isChecked());
                             mAdapter.getData().get(i).check = ((CheckBox) view).isChecked();

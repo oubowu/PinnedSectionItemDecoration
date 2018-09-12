@@ -29,5 +29,5 @@ dependencies {
     compile project(':library')
     compile 'com.google.code.gson:gson:2.4'
 //    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.1.0'
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.6.1'
+    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.42'
 }

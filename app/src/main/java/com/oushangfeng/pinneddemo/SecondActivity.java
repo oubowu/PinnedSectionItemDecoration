@@ -96,7 +96,7 @@ public class SecondActivity extends AppCompatActivity {
 
         mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
             @Override
-            public void SimpleOnItemChildClick(BaseQuickAdapter baseQuickAdapter, View view, int i) {
+            public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int i) {
                 PinnedHeaderEntity<Integer> entity = mAdapter.getItem(i);
                 switch (view.getId()) {
                     case R.id.iv_small_pinned_header:
