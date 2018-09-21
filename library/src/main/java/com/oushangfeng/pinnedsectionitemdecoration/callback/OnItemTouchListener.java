@@ -203,7 +203,7 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
 
         @Override
         public void onLongPress(MotionEvent e) {
-            Log.i("TAG", "GestureListener-76行-onLongPress(): ");
+            Log.i(TAG, "GestureListener-76行-onLongPress(): ");
             shouldIntercept(e);
 
             if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
@@ -223,13 +223,6 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
             Log.i(TAG, "GestureListener-81行-onSingleTapUp(): ");
             shouldIntercept(e);
 
-            return mIntercept;
-        }
-
-        @Override
-        public boolean onSingleTapConfirmed(MotionEvent e) {
-            Log.i(TAG, "GestureListener-113行-onSingleTapConfirmed(): ");
-
             if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
                 // 自己处理点击标签事件
                 try {
@@ -240,7 +233,7 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
                 }
             }
 
-            return super.onSingleTapConfirmed(e);
+            return mIntercept;
         }
 
         @Override
@@ -248,16 +241,14 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
 
             Log.i(TAG, "GestureListener-89行-onDoubleTap(): ");
 
-            // mDoubleTap = true;
             shouldIntercept(e);
 
             if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
                 // 自己处理点击标签事件
                 try {
-                    mHeaderClickListener.onHeaderDoubleClick(mTmpView, mTmpClickId, mPosition);
+                    mHeaderClickListener.onHeaderClick(mTmpView, mTmpClickId, mPosition);
                 } catch (IndexOutOfBoundsException e1) {
                     e1.printStackTrace();
-                    //Log.i("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
                 }
             }
 
@@ -265,7 +256,49 @@ public class OnItemTouchListener implements RecyclerView.OnItemTouchListener {
             mGestureDetector.setIsLongpressEnabled(false);
 
             return mIntercept;
+
         }
+
+        //        @Override
+        //        public boolean onSingleTapConfirmed(MotionEvent e) {
+        //            Log.i(TAG, "GestureListener-113行-onSingleTapConfirmed(): ");
+        //
+        //            if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
+        //                // 自己处理点击标签事件
+        //                try {
+        //                    mHeaderClickListener.onHeaderClick(mTmpView, mTmpClickId, mPosition);
+        //                } catch (IndexOutOfBoundsException e1) {
+        //                    e1.printStackTrace();
+        //                    //Log.i("TAG", "GestureListener-183行-onSingleTapConfirmed(): " + e1);
+        //                }
+        //            }
+        //
+        //            return super.onSingleTapConfirmed(e);
+        //        }
+        //
+        //        @Override
+        //        public boolean onDoubleTap(MotionEvent e) {
+        //
+        //            Log.i(TAG, "GestureListener-89行-onDoubleTap(): ");
+        //
+        //            // mDoubleTap = true;
+        //            shouldIntercept(e);
+        //
+        //            if (!mDisableHeaderClick && mIntercept && mHeaderClickListener != null && mAdapter != null && mPosition <= mAdapter.getItemCount() - 1) {
+        //                // 自己处理点击标签事件
+        //                try {
+        //                    mHeaderClickListener.onHeaderDoubleClick(mTmpView, mTmpClickId, mPosition);
+        //                } catch (IndexOutOfBoundsException e1) {
+        //                    e1.printStackTrace();
+        //                    //Log.i("TAG", "GestureListener-207行-onDoubleTap(): " + e1);
+        //                }
+        //            }
+        //
+        //            // 有机型在调用onDoubleTap后会接着调用onLongPress，这里这样处理
+        //            mGestureDetector.setIsLongpressEnabled(false);
+        //
+        //            return mIntercept;
+        //        }
 
     }
 

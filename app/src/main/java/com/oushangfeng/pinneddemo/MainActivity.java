@@ -3,6 +3,7 @@ package com.oushangfeng.pinneddemo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -135,7 +136,8 @@ public class MainActivity extends AppCompatActivity {
                 switch (mAdapter.getItemViewType(i)) {
                     case BaseHeaderAdapter.TYPE_DATA:
                         PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, "item long click :"+entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "item long click :" + entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(),
+                                Toast.LENGTH_SHORT).show();
                         break;
                     case BaseHeaderAdapter.TYPE_HEADER:
                         entity = mAdapter.getData().get(i);
@@ -147,9 +149,18 @@ public class MainActivity extends AppCompatActivity {
         });
 
         OnHeaderClickListener headerClickListener = new OnHeaderClickListener() {
+
+            private long[] mHits = new long[2];
+
             @Override
             public void onHeaderClick(View view, int id, int position) {
-                Toast.makeText(MainActivity.this, "click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                System.arraycopy(mHits, 1, mHits, 0, mHits.length - 1);
+                mHits[mHits.length - 1] = SystemClock.uptimeMillis(); // 系统开机时间
+                if (mHits[0] >= (SystemClock.uptimeMillis() - 500)) {
+                    Toast.makeText(MainActivity.this, "这就是传说中的双击事件", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MainActivity.this, "click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -157,10 +168,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "long click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
-            @Override
-            public void onHeaderDoubleClick(View view, int id, int position) {
-                Toast.makeText(MainActivity.this, "double click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
-            }
+            //            @Override
+            //            public void onHeaderDoubleClick(View view, int id, int position) {
+            //                Toast.makeText(MainActivity.this, "double click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+            //            }
         };
         mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder(BaseHeaderAdapter.TYPE_HEADER).setDividerId(R.drawable.divider).enableDivider(true)
                 .setHeaderClickListener(headerClickListener).create());

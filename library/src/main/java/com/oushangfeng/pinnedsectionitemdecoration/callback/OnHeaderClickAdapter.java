@@ -18,8 +18,8 @@ public class OnHeaderClickAdapter implements OnHeaderClickListener {
 
     }
 
-    @Override
-    public void onHeaderDoubleClick(View view, int id, int position) {
-
-    }
+//    @Override
+//    public void onHeaderDoubleClick(View view, int id, int position) {
+//
+//    }
 }

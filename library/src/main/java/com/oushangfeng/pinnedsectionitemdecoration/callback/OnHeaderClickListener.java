@@ -12,6 +12,6 @@ public interface OnHeaderClickListener {
 
     void onHeaderLongClick(View view, int id, int position);
 
-    void onHeaderDoubleClick(View view, int id, int position);
+//    void onHeaderDoubleClick(View view, int id, int position);
 
 }
