@@ -15,13 +15,16 @@ A powerful pinned section header library. The realization of ideas comes from「
 ![股市Demo](/pic/stock_demo.gif) 
 
 ## Extension library
-[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(It is highly recommended to use this adapter, which can greatly reduce the amount of work. The current demo is using v2.1.0.)
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(It is highly recommended to use this adapter, which can greatly reduce the amount of work. The current demo is using v2.9.42.)
 
 ## How to use?
 
 To add a dependency using Gradle:
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.0'
+if using AndroidX
+    compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1-androix'
+otherwise
+    compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1'
 ```
 
 Adapter needs to process the span count of header through the FullSpanUtil.

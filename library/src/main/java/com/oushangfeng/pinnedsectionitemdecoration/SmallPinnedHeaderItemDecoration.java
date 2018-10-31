@@ -251,7 +251,7 @@ public class SmallPinnedHeaderItemDecoration extends RecyclerView.ItemDecoration
                 try {
                     final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
                     field.setAccessible(true);
-                    final ArrayList<OnItemTouchListener> touchListeners = (ArrayList<OnItemTouchListener>) field.get(parent);
+                    final ArrayList<RecyclerView.OnItemTouchListener> touchListeners = (ArrayList<RecyclerView.OnItemTouchListener>) field.get(parent);
                     touchListeners.add(0, mItemTouchListener);
                 } catch (NoSuchFieldException e) {
                     e.printStackTrace();
