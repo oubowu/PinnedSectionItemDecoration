@@ -4,11 +4,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -18,6 +13,12 @@ import com.oushangfeng.pinnedsectionitemdecoration.utils.DividerHelper;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 /**
  * Created by Oubowu on 2016/7/21 15:38.
@@ -360,7 +361,7 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                 try {
                     final Field field = parent.getClass().getDeclaredField("mOnItemTouchListeners");
                     field.setAccessible(true);
-                    final ArrayList<OnItemTouchListener> touchListeners = (ArrayList<OnItemTouchListener>) field.get(parent);
+                    final ArrayList<RecyclerView.OnItemTouchListener> touchListeners = (ArrayList<RecyclerView.OnItemTouchListener>) field.get(parent);
                     touchListeners.add(0, mItemTouchListener);
                 } catch (NoSuchFieldException e) {
                     e.printStackTrace();

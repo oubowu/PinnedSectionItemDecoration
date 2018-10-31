@@ -15,13 +15,16 @@
 ![股市Demo](/pic/stock_demo.gif) 
 
 ## 扩展库
-[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。当前demo使用的是v2.1.0。)
+[BaseRecyclerViewAdapterHelper](https://github.com/CymChad/BaseRecyclerViewAdapterHelper)(强烈推荐使用此适配器，可大大减少工作量。当前demo使用的是v2.9.43-alpha1。)
 
 ## 它能做什么？
 
 首先在dependencies添加
 ```groovy
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.0'
+如果使用AndroidX库请依赖
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1-androix'
+否则
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1'
 ```
 
 Adapter记得要实现对网格布局和瀑布流布局的标签占满一行的处理，调用FullSpanUtil工具类进行处理

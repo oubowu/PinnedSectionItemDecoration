@@ -1,7 +1,6 @@
 package com.oushangfeng.pinnedsectionitemdecoration.callback;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
@@ -9,6 +8,8 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.oushangfeng.pinnedsectionitemdecoration.entity.ClickBounds;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Oubowu on 2016/7/24 20:51.

@@ -1,9 +1,9 @@
 apply plugin: 'com.android.library'
-//apply plugin: 'com.novoda.bintray-release'
+apply plugin: "guru.stefma.bintrayrelease"
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.2"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 9
@@ -20,18 +20,20 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    provided 'com.android.support:recyclerview-v7:28.0.0-rc01'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly 'androidx.recyclerview:recyclerview:1.0.0'
 }
 
-//publish {
-//    Properties properties = new Properties()
-//    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-//
-//    userOrg = properties.getProperty('USER_ORG')//bintray.com用户名
-//    groupId = properties.getProperty('GROUP_ID')//jcenter上的路径
-//    artifactId = properties.getProperty('ARTIFACT_ID')//项目名称
-//    publishVersion = properties.getProperty('PUBLISH_VERSION')//版本号
-//    desc = properties.getProperty('DESC')//描述，不重要
-//    website = properties.getProperty('WEBSITE')//网站，不重要；尽量模拟github上的地址，例如我这样的；当然你有地址最好了
-//}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+version = properties.getProperty('PUBLISH_VERSION')
+group = properties.getProperty('GROUP_ID')
+androidArtifact { // 2
+    artifactId = properties.getProperty('ARTIFACT_ID')
+}
+publish {
+    userOrg =  properties.getProperty('USER_ORG')
+    desc = properties.getProperty('DESC')
+    website = properties.getProperty('WEBSITE')
+}

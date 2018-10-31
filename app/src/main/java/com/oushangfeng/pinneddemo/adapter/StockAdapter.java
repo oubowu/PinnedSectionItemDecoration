@@ -1,7 +1,6 @@
 package com.oushangfeng.pinneddemo.adapter;
 
 import android.graphics.Color;
-import android.support.v7.widget.RecyclerView;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.AbsoluteSizeSpan;
@@ -15,6 +14,8 @@ import com.oushangfeng.pinneddemo.entitiy.StockEntity;
 import com.oushangfeng.pinnedsectionitemdecoration.utils.FullSpanUtil;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * Created by Oubowu on 2016/8/3 14:43.

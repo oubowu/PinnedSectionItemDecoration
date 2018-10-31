@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 28
-    buildToolsVersion "28.0.2"
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         applicationId "com.oushangfeng.pinneddemo"
@@ -20,14 +20,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:28.0.0-rc01'
-    compile 'com.android.support:design:28.0.0-rc01'
-    compile 'com.github.bumptech.glide:glide:3.7.0'
-    compile 'com.android.support:support-v4:28.0.0-rc01'
-    compile project(':library')
-    compile 'com.google.code.gson:gson:2.4'
-//    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:v2.1.0'
-    compile 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.42'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    implementation project(':library')
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.43-alpha1'
+
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+
+
 }
