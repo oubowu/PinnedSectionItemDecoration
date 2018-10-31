@@ -22,7 +22,7 @@
 首先在dependencies添加
 ```groovy
 如果使用AndroidX库请依赖
-compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1-androix'
+compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1-androidx'
 否则
 compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1'
 ```
