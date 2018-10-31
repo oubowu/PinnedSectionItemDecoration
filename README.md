@@ -21,7 +21,7 @@ A powerful pinned section header library. The realization of ideas comes from「
 
 To add a dependency using Gradle:
 ```groovy
-if using AndroidX
+If using androidx
     compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1-androix'
 otherwise
     compile 'com.oushangfeng:PinnedSectionItemDecoration:1.3.1'
