@@ -1,5 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: "guru.stefma.bintrayrelease"
+//apply plugin: "guru.stefma.bintrayrelease"
 
 android {
     compileSdkVersion 28
@@ -24,16 +24,16 @@ dependencies {
     compileOnly 'androidx.recyclerview:recyclerview:1.0.0'
 }
 
-Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-version = properties.getProperty('PUBLISH_VERSION')
-group = properties.getProperty('GROUP_ID')
-androidArtifact { // 2
-    artifactId = properties.getProperty('ARTIFACT_ID')
-}
-publish {
-    userOrg =  properties.getProperty('USER_ORG')
-    desc = properties.getProperty('DESC')
-    website = properties.getProperty('WEBSITE')
-}
+//Properties properties = new Properties()
+//properties.load(project.rootProject.file('local.properties').newDataInputStream())
+//
+//version = properties.getProperty('PUBLISH_VERSION')
+//group = properties.getProperty('GROUP_ID')
+//androidArtifact { // 2
+//    artifactId = properties.getProperty('ARTIFACT_ID')
+//}
+//publish {
+//    userOrg =  properties.getProperty('USER_ORG')
+//    desc = properties.getProperty('DESC')
+//    website = properties.getProperty('WEBSITE')
+//}
