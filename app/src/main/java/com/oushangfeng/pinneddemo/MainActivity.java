@@ -123,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
                 switch (mAdapter.getItemViewType(i)) {
                     case BaseHeaderAdapter.TYPE_DATA:
                         PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "item click :" +entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
                         break;
                     case BaseHeaderAdapter.TYPE_HEADER:
                         entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, "click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "item click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
