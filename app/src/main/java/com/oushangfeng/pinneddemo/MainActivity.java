@@ -87,7 +87,8 @@ public class MainActivity extends AppCompatActivity {
 
                         int position = holder.getLayoutPosition();
 
-                        if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+                        if (mRecyclerView
+                                .getLayoutManager() instanceof StaggeredGridLayoutManager) {
                             // 瀑布流布局记录随机高度，就不会导致Item由于高度变化乱跑，导致画分隔线出现问题
                             // 随机高度, 模拟瀑布效果.
 
@@ -96,7 +97,8 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             if (mRandomHeights.get(position) == 0) {
-                                mRandomHeights.put(position, dip2px(MainActivity.this, (int) (100 + Math.random() * 100)));
+                                mRandomHeights.put(position, dip2px(MainActivity.this,
+                                        (int) (100 + Math.random() * 100)));
                             }
 
                             ViewGroup.LayoutParams lp = holder.itemView.getLayoutParams();
@@ -106,7 +108,8 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                         holder.setText(R.id.tv_pos, position + "");
-                        Glide.with(MainActivity.this).load(item.getData()).into((ImageView) holder.getView(R.id.iv_animal));
+                        Glide.with(MainActivity.this).load(item.getData())
+                                .into((ImageView) holder.getView(R.id.iv_animal));
                         break;
                 }
             }
@@ -115,18 +118,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecyclerView.setLayoutManager(
+                new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecyclerView.addOnItemTouchListener(new OnItemClickListener() {
             @Override
             public void onSimpleItemClick(BaseQuickAdapter adapter, View view, int i) {
                 switch (mAdapter.getItemViewType(i)) {
                     case BaseHeaderAdapter.TYPE_DATA:
                         PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "item click: " + entity
+                                .getPinnedHeaderName() + ", position " + i + ", id " + entity
+                                .getData(), Toast.LENGTH_SHORT).show();
                         break;
                     case BaseHeaderAdapter.TYPE_HEADER:
                         entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, "click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,
+                                "item click, tag: " + entity.getPinnedHeaderName(),
+                                Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -136,12 +144,15 @@ public class MainActivity extends AppCompatActivity {
                 switch (mAdapter.getItemViewType(i)) {
                     case BaseHeaderAdapter.TYPE_DATA:
                         PinnedHeaderEntity<Integer> entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, "item long click :" + entity.getPinnedHeaderName() + ", position " + i + ", id " + entity.getData(),
-                                Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "item long click :" + entity
+                                .getPinnedHeaderName() + ", position " + i + ", id " + entity
+                                .getData(), Toast.LENGTH_SHORT).show();
                         break;
                     case BaseHeaderAdapter.TYPE_HEADER:
                         entity = mAdapter.getData().get(i);
-                        Toast.makeText(MainActivity.this, "item long click, tag: " + entity.getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this,
+                                "item long click, tag: " + entity.getPinnedHeaderName(),
+                                Toast.LENGTH_SHORT).show();
                         break;
                 }
             }
@@ -159,13 +170,17 @@ public class MainActivity extends AppCompatActivity {
                 if (mHits[0] >= (SystemClock.uptimeMillis() - 500)) {
                     Toast.makeText(MainActivity.this, "这就是传说中的双击事件", Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(MainActivity.this, "click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,
+                            "click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(),
+                            Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onHeaderLongClick(View view, int id, int position) {
-                Toast.makeText(MainActivity.this, "long click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,
+                        "long click, tag: " + mAdapter.getData().get(position)
+                                .getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             }
 
             //            @Override
@@ -173,8 +188,10 @@ public class MainActivity extends AppCompatActivity {
             //                Toast.makeText(MainActivity.this, "double click, tag: " + mAdapter.getData().get(position).getPinnedHeaderName(), Toast.LENGTH_SHORT).show();
             //            }
         };
-        mRecyclerView.addItemDecoration(new PinnedHeaderItemDecoration.Builder(BaseHeaderAdapter.TYPE_HEADER).setDividerId(R.drawable.divider).enableDivider(true)
-                .setHeaderClickListener(headerClickListener).create());
+        mRecyclerView.addItemDecoration(
+                new PinnedHeaderItemDecoration.Builder(BaseHeaderAdapter.TYPE_HEADER)
+                        .setDividerId(R.drawable.divider).enableDivider(true)
+                        .setHeaderClickListener(headerClickListener).create());
 
         mRecyclerView.setAdapter(mAdapter);
     }
@@ -191,16 +208,19 @@ public class MainActivity extends AppCompatActivity {
 
         switch (id) {
             case R.id.linnear_layout:
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+                mRecyclerView.setLayoutManager(
+                        new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.grid_layout:
-                mRecyclerView.setLayoutManager(new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
+                mRecyclerView.setLayoutManager(
+                        new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false));
                 mAdapter.onAttachedToRecyclerView(mRecyclerView);
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.staggered_grid_layout:
-                mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
+                mRecyclerView.setLayoutManager(
+                        new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL));
                 mAdapter.notifyDataSetChanged();
                 break;
             case R.id.to_stock:

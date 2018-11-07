@@ -129,14 +129,23 @@ public class StockActivity extends AppCompatActivity {
 
                 mRecyclerView.addOnItemTouchListener(new OnItemChildClickListener() {
                     @Override
-                    public void onSimpleItemChildClick(BaseQuickAdapter adapter, View view, int i) {
+                    public void onSimpleItemChildClick(BaseQuickAdapter adapter, final View view, final int i) {
+                        // Log.i("OnItemTouchListener", "onSimpleItemChildClick: " + view.toString());
                         if (view instanceof CheckBox) {
-                            ((CheckBox) view).setChecked(!((CheckBox) view).isChecked());
-                            mAdapter.getData().get(i).check = ((CheckBox) view).isChecked();
-                            if (mHeaderItemDecoration.getPinnedHeaderView() != null && mHeaderItemDecoration.getPinnedHeaderPosition() >= i + mAdapter
-                                    .getHeaderLayoutCount()) {
-                                ((CheckBox) mHeaderItemDecoration.getPinnedHeaderView().findViewById(view.getId())).setChecked(((CheckBox) view).isChecked());
-                            }
+                            view.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    // CheckBox点击后先是触发点击事件，再触发改变选中状态，估计是代码更新了逻辑，这里延时200毫秒
+                                    CheckBox checkBox = (CheckBox) view;
+                                    boolean checked = checkBox.isChecked();
+                                    // Log.i("OnItemTouchListener", "1 onSimpleItemChildClick: " + checked);
+                                    mAdapter.getData().get(i).check = checked;
+                                    if (mHeaderItemDecoration.getPinnedHeaderView() != null && mHeaderItemDecoration.getPinnedHeaderPosition() >= i + mAdapter
+                                            .getHeaderLayoutCount()) {
+                                        ((CheckBox) mHeaderItemDecoration.getPinnedHeaderView().findViewById(view.getId())).setChecked(checked);
+                                    }
+                                }
+                            }, 200);
                         }
                     }
                 });
