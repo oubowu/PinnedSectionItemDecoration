@@ -151,8 +151,11 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             // getTop拿到的是它的原点(它自身的padding值包含在内)相对parent的顶部距离，加上它的高度后就是它的底部所处的位置
             final int headEnd = mPinnedHeaderView.getTop() + mPinnedHeaderView.getHeight();
             // 根据坐标查找view，headEnd + 1找到的就是mPinnedHeaderView底部下面的view
-            final View belowView = parent.findChildViewUnder(c.getWidth() / 2, headEnd + 1);
-            if (isPinnedHeader(parent, belowView)) {
+//            final View belowView = parent.findChildViewUnder(c.getWidth() / 2, headEnd + 1);
+            // 解决头部闪烁问题
+            final View belowView = parent.findChildViewUnder(c.getWidth() / 2, headEnd);
+            int belowViewAdapterPosition = parent.getChildAdapterPosition(belowView);
+            if (belowViewAdapterPosition > mFirstVisiblePosition && isPinnedHeader(parent, belowView)) {
                 // 如果是标签的话，缓存的标签就要同步跟此标签移动
                 // 根据belowView相对顶部距离计算出缓存标签的位移
                 mPinnedHeaderOffset = belowView.getTop() - (mRecyclerViewPaddingTop + mPinnedHeaderView.getHeight() + mHeaderTopMargin);
@@ -314,11 +317,21 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             // 对高度进行处理
-            int heightMode = View.MeasureSpec.getMode(lp.height);
-            int heightSize = View.MeasureSpec.getSize(lp.height);
+            int heightMode;
+            int heightSize;
 
-            if (heightMode == View.MeasureSpec.UNSPECIFIED) {
+            if (lp.height >= 0) {
                 heightMode = View.MeasureSpec.EXACTLY;
+                heightSize = lp.height;
+            } else if (lp.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+                heightMode = View.MeasureSpec.EXACTLY;
+                heightSize = parent.getHeight();
+            } else if (lp.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                heightMode = View.MeasureSpec.AT_MOST;
+                heightSize = parent.getHeight();
+            } else {
+                heightMode = View.MeasureSpec.AT_MOST;
+                heightSize = parent.getHeight();
             }
 
             mRecyclerViewPaddingLeft = parent.getPaddingLeft();
@@ -366,6 +379,10 @@ public class PinnedHeaderItemDecoration extends RecyclerView.ItemDecoration {
                     e.printStackTrace();
                     parent.addOnItemTouchListener(mItemTouchListener);
                 } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                    parent.addOnItemTouchListener(mItemTouchListener);
+                } catch (Exception e) {
+                    // 防止android 9禁止了反射调用
                     e.printStackTrace();
                     parent.addOnItemTouchListener(mItemTouchListener);
                 }
